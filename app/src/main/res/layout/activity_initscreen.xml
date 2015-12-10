@@ -1,0 +1,251 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".initscreen">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/mainMenuFrame"
+        android:longClickable="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MAIN MENU"
+            android:id="@+id/mainMenu"
+            android:layout_gravity="left|top"
+            android:typeface="normal"
+            android:textSize="45dp"
+            android:textColor="#000000" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mainMenuFrame"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="91dp"
+        android:id="@+id/guillotineFrame">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GUILLOTINE"
+            android:id="@+id/gullotine"
+            android:layout_gravity="center"
+            android:textColor="#ffffff"
+            android:textSize="90dp"
+            android:typeface="normal"
+            android:textStyle="bold"
+            android:background="#000000" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nameFrame"
+        android:layout_marginLeft="31dp"
+        android:layout_marginStart="31dp"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/guillotineFrame"
+        android:layout_alignStart="@+id/guillotineFrame">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="USER NAME:"
+            android:id="@+id/userName"
+            android:textColor="#000000"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nameEditFrame"
+        android:layout_alignTop="@+id/nameFrame"
+        android:layout_alignRight="@+id/opponentsFrame"
+        android:layout_alignEnd="@+id/opponentsFrame"
+        android:layout_alignBottom="@+id/nameFrame">
+
+        <EditText
+            android:layout_marginLeft="20dp"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/editName"
+            android:layout_gravity="center"
+            android:textSize="20dp" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/opponentsFrame"
+        android:layout_marginTop="22dp"
+        android:layout_below="@+id/nameEditFrame"
+        android:layout_toRightOf="@+id/numOppFrame"
+        android:layout_toEndOf="@+id/numOppFrame">
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text"
+            android:id="@+id/opponents"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:id="@+id/oneOpp"
+                android:enabled="true"
+                android:checked="false"
+                android:textColor="#000000"
+                android:textSize="30dp"
+                android:layout_marginRight="35dp"
+                android:clickable="true" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2"
+                android:id="@+id/twoOpp"
+                android:textSize="30dp"
+                android:layout_marginRight="35dp" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3"
+                android:id="@+id/threeOpp"
+                android:textSize="30dp" />
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/levelsFrame"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/opponentsFrame"
+        android:layout_toRightOf="@+id/levelFrame"
+        android:layout_toEndOf="@+id/levelFrame">
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text"
+            android:id="@+id/levels"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BEGINNER"
+                android:id="@+id/beginner"
+                android:textSize="30dp"
+                android:layout_marginRight="20dp"
+                android:checked="false" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EXPERT"
+                android:id="@+id/expert"
+                android:layout_gravity="center_vertical"
+                android:textSize="30dp" />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/opponentsFrame"
+        android:layout_alignLeft="@+id/nameFrame"
+        android:layout_alignStart="@+id/nameFrame"
+        android:id="@+id/numOppFrame">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="# OPPONENTS:"
+            android:id="@+id/numOpp"
+            android:layout_gravity="center"
+            android:textSize="30dp"
+            android:textColor="#000000"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/levelsFrame"
+        android:layout_alignLeft="@+id/numOppFrame"
+        android:layout_alignStart="@+id/numOppFrame"
+        android:id="@+id/levelFrame">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LEVEL:"
+            android:id="@+id/level"
+            android:layout_gravity="center"
+            android:textColor="#000000"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/rulesFrame">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RULES"
+            android:id="@+id/rulesButton1"
+            android:layout_gravity="center"
+            android:textSize="35dp"
+            android:background="#22D2B5"
+            android:onClick="onRules"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/rulesFrame"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/startFrame">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="START!"
+            android:id="@+id/start"
+            android:layout_gravity="center"
+            android:textSize="35dp"
+            android:background="#FA8500"
+            android:onClick="onStart"/>
+    </FrameLayout>
+</RelativeLayout>

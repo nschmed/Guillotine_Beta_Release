@@ -1,0 +1,141 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.muhammed.proj.RulesScreen">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rulesLayout"
+        android:longClickable="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RULES"
+            android:id="@+id/rulesText"
+            android:layout_gravity="left|top"
+            android:typeface="normal"
+            android:textSize="45dp"
+            android:textColor="#000000" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/startLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CLOSE"
+            android:id="@+id/close"
+            android:layout_gravity="center"
+            android:textSize="35dp"
+            android:background="#99ff33"
+            android:onClick="onClose"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textLayout"
+        android:layout_below="@+id/rulesLayout"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Object: Collect the most points by beheading important nobles. "
+            android:id="@+id/text1"
+            android:singleLine="true"
+            android:textSize="19dp"
+            android:layout_marginBottom="17dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Overview: Play is divided into three “days.”  On each day, 12 nobles are lined up to await their turns at the guillotine.  Players take turns playing action cards from their hands, which could end up rearranging the order of the line, then collect nobles from the front of the line.  At the end of the third day, the player with the most points wins. Setup: Five cards will be dealt randomly to each player. "
+            android:id="@+id/text2"
+            android:textSize="19dp"
+            android:layout_marginBottom="17dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Play: 12 noble cards will be randomly placed face up in a line from left to right.  The right end has the guillotine.  Someone is chosen at random to go first.  Their turn progresses as follows: "
+            android:id="@+id/text3"
+            android:textSize="19dp"
+            android:layout_marginBottom="17dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text2Layout"
+        android:layout_below="@+id/textLayout"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_width="800dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="1. Play an Action Card (optional): Action cards allow you to move nobles around in line, draw extra cards, add or remove nobles from line, get extra points, etc. "
+            android:id="@+id/text4"
+            android:textSize="19dp"
+            android:layout_marginBottom="17dp" />
+
+        <TextView
+            android:layout_width="800dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="2. Collect the First Noble in Line: Nobles are worth varying points depending on their notoriety.  When you collect a noble card it will be placed face up in front of you to make a score pile.  All collected noble cards are left face up on the table at all times. "
+            android:id="@+id/text5"
+            android:textSize="19dp"
+            android:layout_marginBottom="17dp" />
+
+        <TextView
+            android:layout_width="800dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="3. Draw an Action Card (if you played one) "
+            android:id="@+id/text6"
+            android:textSize="19dp"
+            android:layout_marginBottom="17dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text2Layout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/text3Layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Play continues to the left, with each player taking the same three actions.  Players retain their noble cards and action cards between days.  Once all nobles have been eliminated from the line, the day is over and the next day will begin, and 12 new nobles will be dealt.  At the end of the third day, the noble values for each player will be totaled and whoever has the most points will win!  "
+            android:id="@+id/text7"
+            android:textSize="19dp" />
+    </LinearLayout>
+
+</RelativeLayout>

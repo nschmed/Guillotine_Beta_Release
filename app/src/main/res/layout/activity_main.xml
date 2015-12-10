@@ -1,0 +1,770 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="#ffffffff"
+    android:screenOrientation="landscape"
+    android:padding="5dp">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/LayoutforPrompt">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Prompts"
+            android:id="@+id/PromptTitle"
+            android:textSize="30dp"
+            android:layout_below="@+id/LayoutforPrompt"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="#ffd9faff" />
+
+        <TextView
+            android:layout_width="213dp"
+            android:layout_height="310dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/PromptTextBox"
+            android:layout_below="@+id/PromptTitle"
+            android:background="#ffc5c5c5"
+            android:textSize="12dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/LayoutforPrompt"
+        android:layout_alignEnd="@+id/LayoutforPrompt"
+        android:id="@+id/MenuLayout"
+        android:layout_above="@+id/LayoutforPrompt"
+        android:weightSum="1"
+        android:layout_toEndOf="@+id/gridLayout">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="End Game"
+            android:id="@+id/MenuButton"
+            android:clickable="true"
+            android:onClick="endButton"
+            android:layout_gravity="right" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Help"
+            android:id="@+id/HelpButton"
+            android:clickable="true"
+            android:onClick="helpButton"
+            android:layout_weight="0.05"
+            android:layout_gravity="right" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Your Score:"
+            android:id="@+id/textView"
+            android:textSize="20dp"
+            android:layout_gravity="center_horizontal|right" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/humanScore"
+            android:layout_gravity="right"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/textView9"
+            android:layout_gravity="bottom" />
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="25dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/ScoreofPlayer"
+            android:textSize="18dp" />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pass"
+        android:id="@+id/PassButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"
+        android:onClick="passButton"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/NoblesScoreLayout">
+
+        <Spinner
+            android:layout_width="155dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerYourNobles" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Look At Noble"
+            android:id="@+id/chooseNobleButton"
+            android:textSize="12dp"
+            android:layout_gravity="center_vertical"
+            android:clickable="true"
+            android:onClick="chooseNobleButton"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:id="@+id/GuillotineImage"
+        android:src="@mipmap/guillotinefinal"
+        android:scaleType="fitCenter"
+        android:textAlignment="inherit"
+        android:cropToPadding="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/gridLayout"
+        android:layout_toStartOf="@+id/gridLayout"
+        android:layout_above="@+id/linearLayout" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
+        android:layout_above="@+id/NoblesScoreLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout">
+
+        <ImageView
+            android:layout_width="113dp"
+            android:layout_height="76dp"
+            android:id="@+id/nobleCardsDraw"
+            android:src="@mipmap/nobleback" />
+
+        <ImageView
+            android:layout_width="113dp"
+            android:layout_height="76dp"
+            android:id="@+id/ActionCardsDraw"
+            android:src="@mipmap/actionback"
+            android:clickable="true"
+            android:onClick="actionCardDrawButton"/>
+
+    </LinearLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/NoblesScoreLayout"
+        android:layout_toStartOf="@+id/LayoutforPrompt"
+        android:columnCount="8"
+        android:rowCount="41"
+        android:id="@+id/gridLayout"
+        android:layout_alignTop="@+id/LayoutforPrompt">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble1"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:src="@mipmap/noblefront"
+            android:nestedScrollingEnabled="true"
+            android:clickable="true"
+            android:onClick="nobleOne"
+             />
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble2"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:src="@mipmap/noblefront"
+            android:layout_gravity="left|bottom"
+            android:clickable="true"
+            android:onClick="nobleTwo"/>
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble3"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleThree"/>
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble4"
+            android:layout_row="1"
+            android:layout_column="3"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleFour"/>
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble7"
+            android:layout_row="3"
+            android:layout_column="0"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleSeven"/>
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble8"
+            android:layout_row="3"
+            android:layout_column="1"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleEight"/>
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble9"
+            android:layout_row="3"
+            android:layout_column="2"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleNine"/>
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble10"
+            android:layout_row="3"
+            android:layout_column="3"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleTen"/>
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble11"
+            android:layout_row="3"
+            android:layout_column="4"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleEleven"/>
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="95dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/textView12"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:text=" Next In Line To Die"
+            android:gravity="bottom|center" />
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble12"
+            android:layout_row="3"
+            android:layout_column="5"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleTwelve"/>
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble5"
+            android:layout_row="1"
+            android:layout_column="4"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleFive"/>
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/noble6"
+            android:layout_row="1"
+            android:layout_column="5"
+            android:src="@mipmap/noblefront"
+            android:clickable="true"
+            android:onClick="nobleSix"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble One"
+            android:id="@+id/textView5"
+            android:layout_column="0"
+            android:layout_row="2"
+            android:singleLine="true"
+            android:textSize="12dp"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Two"
+            android:id="@+id/textView11"
+            android:layout_column="1"
+            android:layout_row="2"
+            android:layout_gravity="center_horizontal"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Three"
+            android:id="@+id/textView13"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="2"
+            android:layout_row="2"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Four"
+            android:id="@+id/textView14"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="3"
+            android:layout_row="2"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Five"
+            android:id="@+id/textView15"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="4"
+            android:layout_row="2"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Six"
+            android:id="@+id/textView16"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="5"
+            android:layout_row="2"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Seven"
+            android:id="@+id/textView17"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="0"
+            android:layout_row="4"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Eight"
+            android:id="@+id/textView18"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="1"
+            android:layout_row="4"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Nine"
+            android:id="@+id/textView19"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="2"
+            android:layout_row="4"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Ten"
+            android:id="@+id/textView20"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="3"
+            android:layout_row="4"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Eleven"
+            android:id="@+id/textView21"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="4"
+            android:layout_row="4"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Noble Twelve"
+            android:id="@+id/textView22"
+            android:layout_gravity="center_horizontal"
+            android:layout_column="5"
+            android:layout_row="4"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text=" Day: "
+            android:id="@+id/textView28"
+            android:layout_row="10"
+            android:layout_column="0"
+            android:textSize="30dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/dayNum"
+            android:layout_row="10"
+            android:layout_column="1"
+            android:textSize="30dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/textView30"
+            android:layout_row="7"
+            android:layout_column="2" />
+
+    </GridLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_toRightOf="@+id/linearLayout"
+        android:layout_toLeftOf="@+id/MenuLayout"
+        android:layout_toStartOf="@+id/MenuLayout"
+        android:id="@+id/gridLayout2"
+        android:layout_alignBottom="@+id/MenuLayout"
+        android:layout_alignTop="@+id/MenuLayout">
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/player2NumCards"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/player3Score"
+            android:layout_row="1"
+            android:layout_column="3"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/player2Score"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/player3NumCards"
+            android:layout_row="0"
+            android:layout_column="3"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/player4Score"
+            android:layout_row="1"
+            android:layout_column="5"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="   Player 2 Score:  "
+            android:id="@+id/player2Title"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text=" Player 3 Score:  "
+            android:id="@+id/player3Title"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="   Player 4 Score:  "
+            android:id="@+id/player4Title"
+            android:layout_row="1"
+            android:layout_column="4"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/player4NumCards"
+            android:layout_row="0"
+            android:layout_column="5"
+            android:textSize="12dp" />
+    </GridLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/NoblesScoreLayout"
+        android:id="@+id/HandLayout"
+        android:layout_alignTop="@+id/PassButton"
+        android:layout_toLeftOf="@+id/PassButton"
+        android:layout_toStartOf="@+id/PassButton">
+
+        <Spinner
+            android:layout_width="156dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerYourActions"
+            android:layout_row="0"
+            android:layout_column="0" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show Action Card"
+            android:id="@+id/actionCardShowButton"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:singleLine="false"
+            android:layout_gravity="center_vertical"
+            android:textSize="12dp"
+            android:clickable="true"
+            android:onClick="showActionButton"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="      User Name:  "
+            android:id="@+id/userNameTitle"
+            android:layout_row="0"
+            android:layout_column="2"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/userName"
+            android:layout_row="0"
+            android:layout_column="3"
+            android:textSize="20dp"
+            android:textIsSelectable="false" />
+
+    </GridLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textView10"
+        android:layout_below="@+id/MenuLayout"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="false" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textView10"
+        android:background="#fb399095"
+        android:visibility="invisible"
+        android:id="@+id/LayoutForActionCard"
+        android:layout_alignBottom="@+id/linearLayout"
+        android:layout_toRightOf="@+id/GuillotineImage"
+        android:layout_alignRight="@+id/FrameLayoutZoomNoble"
+        android:layout_alignEnd="@+id/FrameLayoutZoomNoble">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Choose Action "
+            android:id="@+id/buttonChooseAction"
+            android:layout_gravity="left|bottom"
+            android:clickable="true"
+            android:onClick="chooseActionCardToPlay"/>
+
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:id="@+id/imageViewForActionCardChosen"
+            android:layout_gravity="center" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="   Go Back   "
+            android:id="@+id/button"
+            android:layout_gravity="bottom|right"
+            android:clickable="true"
+            android:onClick="goBackToPlay"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#7160a7"
+        android:id="@+id/FrameLayoutZoomNoble"
+        android:visibility="invisible"
+        android:layout_alignTop="@+id/LayoutForActionCard"
+        android:layout_alignLeft="@+id/gridLayout"
+        android:layout_alignStart="@+id/gridLayout"
+        android:layout_toStartOf="@+id/LayoutforPrompt"
+        android:layout_alignBottom="@+id/LayoutForActionCard">
+
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:id="@+id/ImageOfZoomedNoble"
+            android:layout_gravity="center" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Go Back "
+            android:id="@+id/goBackFromZoomNoble"
+            android:layout_gravity="left|bottom"
+            android:clickable="true"
+            android:onClick="goBackFromZoomedNoble"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Choose Noble "
+            android:id="@+id/chooseNobleButtonPopUp"
+            android:layout_gravity="right|bottom"
+            android:clickable="true"
+            android:onClick="chooseNobleFromZoomedNoble"
+            android:visibility="visible" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/GuillotineImage"
+        android:layout_alignRight="@+id/NoblesScoreLayout"
+        android:layout_alignEnd="@+id/NoblesScoreLayout"
+        android:background="#abeaff"
+        android:id="@+id/popUpActionUserChoose"
+        android:visibility="invisible">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Player 2"
+            android:id="@+id/actionPopUpChoosePlayer2"
+            android:layout_gravity="left|center_vertical"
+            android:onClick="player2UserChosen"/>
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Player 3"
+            android:id="@+id/actionPopUpChosenPlayer3"
+            android:layout_gravity="center"
+            android:onClick="player3UserChosen"/>
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Player 4"
+            android:id="@+id/actionPopUpchosenPlayer4"
+            android:layout_gravity="right|center_vertical"
+            android:onClick="player4UserChosen"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Choose a player for the Action Card you have played..."
+            android:id="@+id/textView2"
+            android:layout_gravity="center_horizontal|top"
+            android:textSize="18dp" />
+    </FrameLayout>
+
+
+</RelativeLayout>

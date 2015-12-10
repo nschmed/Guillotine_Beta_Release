@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">guillotine</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name = "menu_settings">Settings</string>
+    <string name="title_activity_game_over">GameOver</string>
+</resources>

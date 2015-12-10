@@ -1,0 +1,112 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="edu.up.cs301.guillotine.guillotine.GameOver">
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical" android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:weightSum="1">
+
+
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="635dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Game Over!"
+        android:id="@+id/textView23"
+        android:layout_weight="0.19"
+        android:layout_gravity="center"
+        android:textSize="100dp" />
+
+    <GridLayout
+        android:layout_width="504dp"
+        android:layout_height="234dp"
+        android:layout_gravity="center|bottom">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="  Your Score:   "
+            android:id="@+id/textView24"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="  Computer Player1 Score:  "
+            android:id="@+id/textView25"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/comp1ScoreGameOver"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="  Computer Player2 Score:  "
+            android:id="@+id/textView26"
+            android:layout_row="2"
+            android:layout_column="0"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/comp2ScoreGameOver"
+            android:layout_row="2"
+            android:layout_column="1"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="  Computer Player3 Score:  "
+            android:id="@+id/textView27"
+            android:layout_row="3"
+            android:layout_column="0"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/userScoreGameOver"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:textSize="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/comp3ScoreGameOver"
+            android:layout_row="3"
+            android:layout_column="1"
+            android:textSize="20dp" />
+    </GridLayout>
+</FrameLayout>
+</LinearLayout>
+</RelativeLayout>
