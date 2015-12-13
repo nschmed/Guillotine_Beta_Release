@@ -3,7 +3,7 @@ package edu.up.cs301.guillotine.guillotine;
 import java.util.ArrayList;
 
 /**
- * This is a computer player that will switch between easy and hard based on the constructor and play a card.
+ * This is a computer player that is set to hard, will take a turn and play a card.
  *
  * @author Muhammed Acar
  * @author Linnea Bair
@@ -14,27 +14,38 @@ import java.util.ArrayList;
 public class GuillotineComputerPlayerHard extends GameComputerPlayer implements GamePlayer {
 
 	/**
-	 * Constructor for objects of class GuillotineComputerPlayerEasy
+	 * Constructor for objects of class GuillotineComputerPlayerHard
 	 */
 	public GuillotineComputerPlayerHard() {
 
 	}
 
-
+	/*
+     * This takes a turn for a given computer player.
+     * @param state
+     *      This state shows whose turn it is and what all the variables are set to.
+     */
 	@Override
 	public GuillotineState takeTurn(GuillotineState state){
-		state = playCard(state);
+		state = playCard(state);//play a card
+		//if a second card can be played, play it.
 		if (state.getPlaySecondAction()) {
 			playCard(state);
-			state.setPlaySecondAction(false);
+			state.setPlaySecondAction(false); //reset the variable
 		}
-		state.collectNoble(state.getCurrentPlayer());
-		state.drawActionCard(state.getCurrentPlayer());
-		state.setCurrentPlayer();
+		state.collectNoble(state.getCurrentPlayer()); //collect a noble
+		state.drawActionCard(state.getCurrentPlayer()); //draw an action card
+		state.setCurrentPlayer(); //increment the current player to change turns.
 		return state;
 	}
 
 	@Override
+	/*
+     * This plays a card for a given computer player. It is currently fairly random for the hard player,
+     * needs to be made more difficult
+     * @param state
+     *      This state shows whose turn it is and what all the variables are set to.
+     */
 	public GuillotineState playCard(GuillotineState state) {
 		if (state.getCurrentPlayer() == 1){
 			ArrayList<ActionCard> hand = state.getComputerPlayer1Hand();
@@ -44,7 +55,7 @@ public class GuillotineComputerPlayerHard extends GameComputerPlayer implements 
 			ActionCard playingCard = hand.get(rand);
 			state.addToMessage("\nPlayer 2 played " + playingCard.getName() + ".");
 			hand.remove(rand);
-			playingCard.easyAIAction(state);
+			playingCard.hardAIAction(state);
 			state.setComputerPlayer1Hand(hand);
 		}
 		else if(state.getCurrentPlayer() == 2) {
@@ -55,7 +66,7 @@ public class GuillotineComputerPlayerHard extends GameComputerPlayer implements 
 			ActionCard playingCard = hand.get(rand);
 			state.addToMessage("\nPlayer 3 played " + playingCard.getName() + ".");
 			hand.remove(rand);
-			playingCard.easyAIAction(state);
+			playingCard.hardAIAction(state);
 			state.setComputerPlayer2Hand(hand);
 		}
 		else if(state.getCurrentPlayer() == 3) {
@@ -66,7 +77,7 @@ public class GuillotineComputerPlayerHard extends GameComputerPlayer implements 
 			ActionCard playingCard = hand.get(rand);
 			state.addToMessage("\nPlayer 4 played " + playingCard.getName() + ".");
 			hand.remove(rand);
-			playingCard.easyAIAction(state);
+			playingCard.hardAIAction(state);
 			state.setComputerPlayer3Hand(hand);
 		}
 		return state;

@@ -14,12 +14,23 @@ import org.w3c.dom.Text;
 
 import edu.up.cs301.guillotine.R;
 
+/**
+ * This is the basic view of the game over screen, and the activity that supports its display.
+ *
+ * @author Nathan Schmedake
+ * @author Muhammed Acar
+ * @author Melanie Martinell
+ * @author Linnea Bair
+ * @version December 2015
+ */
 public class GameOver extends AppCompatActivity {
 
+    //These are the players' scores at the end of the game.
     private TextView userScore;
     private TextView scorePlayer1;
     private TextView scorePlayer2;
     private TextView scorePlayer3;
+    //This is the intent used to pass in the players' scores.
     Intent intent3;
 
     @Override
@@ -27,15 +38,17 @@ public class GameOver extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_over);
 
+        //Initialize text views
         userScore = (TextView)findViewById(R.id.userScoreGameOver);
         scorePlayer1 = (TextView)findViewById(R.id.comp1ScoreGameOver);
         scorePlayer2 = (TextView)findViewById(R.id.comp2ScoreGameOver);
         scorePlayer3 = (TextView)findViewById(R.id.comp3ScoreGameOver);
 
-
+        //Receive intent and the values of the scores as an array.
         intent3 = getIntent();
         int littleArray[] = intent3.getIntArrayExtra("values");
 
+        //See who wins
         int winner =0;
         for(int i=0;i<littleArray.length-1;i++){
             if(littleArray[i]<littleArray[i+1]){
@@ -43,6 +56,7 @@ public class GameOver extends AppCompatActivity {
             }
         }
 
+        //Display who wins with a toast.
         String winnerName = "";
         if(winner ==0){
             winnerName = "You have won!!";
@@ -59,6 +73,7 @@ public class GameOver extends AppCompatActivity {
 
         Toast.makeText(getApplicationContext(),winnerName,Toast.LENGTH_LONG).show();
 
+        //Set the scores and display them.
         String human = littleArray[0] + "";
         String comp1 = littleArray[1]+"";
         String comp2 = littleArray[2]+"";
@@ -71,10 +86,20 @@ public class GameOver extends AppCompatActivity {
 
         lockOrientationLandscape(GameOver.this);
     }
+
+    /*
+     * This allows for the orientation to be locked to landscape
+     * @param activity
+     *      The current activity
+     */
     public static void lockOrientationLandscape(Activity activity) {
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
+    /*
+     * This creates the menu. It is basic.
+     * @param menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -82,6 +107,10 @@ public class GameOver extends AppCompatActivity {
         return true;
     }
 
+    /*
+     * This allows for the menu to be active
+     * @param item
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

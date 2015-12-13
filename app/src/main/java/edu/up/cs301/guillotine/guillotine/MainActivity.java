@@ -24,19 +24,21 @@ import edu.up.cs301.guillotine.R;
 //import com.example.administrator.guillotine.R;
 
 /**
- * This is a different version of the game screen.
+ * This is the basic view of the game screen, and the activity that supports play.
  *
  * @author Nathan Schmedake
  * @author Muhammed Acar
  * @author Melanie Martinell
  * @author Linnea Bair
- * @version November 2015
+ * @version December 2015
  */
 
 public class MainActivity extends Activity {
 
+    //Intent to be used
     Intent intent2;
 
+    //The gui objects
     private TextView promptTextBox;
     private Spinner yourActionCards;
     private Spinner yourNobleCards;
@@ -60,7 +62,7 @@ public class MainActivity extends Activity {
 
     private int deathRowNum;
 
-    //popUp Action Choosen by User
+    //popUp Action chosen by User
     private FrameLayout popUpUserChosenPlayer;
     private Button player2UserChosen;
     private Button player3UserChosen;
@@ -101,43 +103,45 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //initialize the game
+        //get the variables that the user inputed on the main menu
         intent2 = getIntent();
         int littleArray[] = intent2.getIntArrayExtra("values");
         String nameArray[] = intent2.getStringArrayExtra("name");
         numCompPlayers = littleArray[0];
         difficulty = littleArray[1];
-        if (difficulty == 0){
+        if (difficulty == 0) {
             compPlayers = new GuillotineComputerPlayerEasy();
-        }
-        else if (difficulty == 1){
+        } else if (difficulty == 1) {
             compPlayers = new GuillotineComputerPlayerHard();
         }
         name = nameArray[0];
 
+
+        //initialize main activity
         promptTextBox = (TextView) findViewById(R.id.PromptTextBox);
-        userName = (TextView)findViewById(R.id.userName);
+        userName = (TextView) findViewById(R.id.userName);
 
-        dayNum = (TextView)findViewById(R.id.dayNum);
+        dayNum = (TextView) findViewById(R.id.dayNum);
 
-        lookAtNobles = (Button)findViewById(R.id.chooseNobleButton);
-        showActionCards = (Button)findViewById(R.id.actionCardShowButton);
-        drawActionCards = (ImageView)findViewById(R.id.ActionCardsDraw);
+        lookAtNobles = (Button) findViewById(R.id.chooseNobleButton);
+        showActionCards = (Button) findViewById(R.id.actionCardShowButton);
+        drawActionCards = (ImageView) findViewById(R.id.ActionCardsDraw);
 
 
-        chooseNoblePopUp = (Button)findViewById(R.id.chooseNobleButtonPopUp);
+        chooseNoblePopUp = (Button) findViewById(R.id.chooseNobleButtonPopUp);
         chooseNoblePopUp.setVisibility(View.INVISIBLE);
 
 
-
-        humanPlayerScore = (TextView)findViewById(R.id.humanScore);
+        humanPlayerScore = (TextView) findViewById(R.id.humanScore);
         popUpActionCard = (FrameLayout) findViewById(R.id.LayoutForActionCard);
         popUpNobleZoomed = (FrameLayout) findViewById(R.id.FrameLayoutZoomNoble);
 
 
-        popUpUserChosenPlayer = (FrameLayout)findViewById(R.id.popUpActionUserChoose);
-        player2UserChosen = (Button)findViewById(R.id.actionPopUpChoosePlayer2);
-        player3UserChosen = (Button)findViewById(R.id.actionPopUpChosenPlayer3);
-        player4UserChosen = (Button)findViewById(R.id.actionPopUpchosenPlayer4);
+        popUpUserChosenPlayer = (FrameLayout) findViewById(R.id.popUpActionUserChoose);
+        player2UserChosen = (Button) findViewById(R.id.actionPopUpChoosePlayer2);
+        player3UserChosen = (Button) findViewById(R.id.actionPopUpChosenPlayer3);
+        player4UserChosen = (Button) findViewById(R.id.actionPopUpchosenPlayer4);
 
 
         //set the nobles
@@ -155,28 +159,26 @@ public class MainActivity extends Activity {
         noble12 = (ImageView) findViewById(R.id.noble12);
 
 
-        player2Score = (TextView)findViewById(R.id.player2Score);
-        player3Score = (TextView)findViewById(R.id.player3Score);
-        player4Score = (TextView)findViewById(R.id.player4Score);
-        player2Title = (TextView)findViewById(R.id.player2Title);
-        player3Title = (TextView)findViewById(R.id.player3Title);
-        player4Title = (TextView)findViewById(R.id.player4Title);
-        player2ScoreTitle = (TextView)findViewById(R.id.player2NumCards);
+        player2Score = (TextView) findViewById(R.id.player2Score);
+        player3Score = (TextView) findViewById(R.id.player3Score);
+        player4Score = (TextView) findViewById(R.id.player4Score);
+        player2Title = (TextView) findViewById(R.id.player2Title);
+        player3Title = (TextView) findViewById(R.id.player3Title);
+        player4Title = (TextView) findViewById(R.id.player4Title);
+        player2ScoreTitle = (TextView) findViewById(R.id.player2NumCards);
 
         //show only the number of computer players the user decided
-        if(numCompPlayers==1){
+        if (numCompPlayers == 1) {
             player4Title.setVisibility(View.INVISIBLE);
             player4Score.setVisibility(View.INVISIBLE);
             player3Title.setVisibility(View.INVISIBLE);
             player3Score.setVisibility(View.INVISIBLE);
 
         }
-        if(numCompPlayers==2){
+        if (numCompPlayers == 2) {
             player4Title.setVisibility(View.INVISIBLE);
             player4Score.setVisibility(View.INVISIBLE);
         }
-
-
 
 
         imageofActionCardChosen = (ImageView) findViewById(R.id.imageViewForActionCardChosen);
@@ -190,23 +192,24 @@ public class MainActivity extends Activity {
         state = new GuillotineState(numCompPlayers, name, difficulty);
 
 
-        userName.setText(name+"");
+        userName.setText(name + "");
 
 
-        if(state!=null) {
-           dayNum.setText(state.getDay() + "");
+        if (state != null) {
+            dayNum.setText(state.getDay() + "");
         }
 
 
-        //change the length based on how many nobles possible
-        //and action cards possible. I don't know how many.
+        //arraylists for noble and action card spinner
         yourActionCardNames = new ArrayList<String>();
         yourNobleCardNames = new ArrayList<String>();
 
+        //titles for both spinners
         yourNobleCardNames.add("---Noble Cards---");
         yourActionCardNames.add("---Action Cards---");
 
 
+        //initialize the deathrow, the spinners
         setDeathRowLine();
         createActionSpinner();
         createNobleSpinner();
@@ -214,15 +217,15 @@ public class MainActivity extends Activity {
         addListenerOnNobleSelected();
 
         //if the first player is 1, take turn
-        if(state.getCurrentPlayer() == 1){
+        if (state.getCurrentPlayer() == 1) {
             compPlayers.takeTurn(state);
         }
         //if the current player is 2, take turn
-        if(state.getCurrentPlayer() == 2){
+        if (state.getCurrentPlayer() == 2) {
             compPlayers.takeTurn(state);
         }
         //if the current player is 3, take turn
-        if(state.getCurrentPlayer() == 3){
+        if (state.getCurrentPlayer() == 3) {
             compPlayers.takeTurn(state);
         }
 
@@ -231,17 +234,17 @@ public class MainActivity extends Activity {
         promptTextBox.setText(state.getMessage());
     }
 
-
-
+    /*
+     * Sets the images of the death row nobles
+     */
     private void setDeathRowLine() {
         //set the nobles image based on what was initialized in
         //the gamestate
-        if(state!=null) {
+        if (state != null) {
 
-            if(state.deathRow.size()>=1) {
+            if (state.deathRow.size() >= 1) {
                 noble1.setImageResource(state.deathRow.get(0).getImage());
-            }
-            else if(state.deathRow.size()<1){
+            } else if (state.deathRow.size() < 1) {
 
                 noble1.setImageResource(0);
                 noble1.setClickable(false);
@@ -249,89 +252,85 @@ public class MainActivity extends Activity {
                 state.setDay(state.getDay() + 1);
 
 
-                if(state.isGameOver()){
+                //if there is no nobles left in the line, decide if game is over
+                //or if the day is just over.
+                if (state.isGameOver()) {
                     Intent intent = new Intent(this, GameOver.class);
-                    int values[] = {state.getHumanPlayerScore(),state.getComputerPlayer1Score(),state.getComputerPlayer2Score(),state.getComputerPlayer3Score()};
+                    int values[] = {state.getHumanPlayerScore(), state.getComputerPlayer1Score(), state.getComputerPlayer2Score(), state.getComputerPlayer3Score()};
                     intent.putExtra("values", values);
                     startActivity(intent);
-                    //startActivity(new Intent(this, GameOver.class));
+
                 }
 
             }
-            if(state.deathRow.size()>=2) {
+            //if there is at least 2 nobles in line, set the image
+            if (state.deathRow.size() >= 2) {
                 noble2.setImageResource(state.deathRow.get(1).getImage());
             }
-            else if(state.deathRow.size()<2){
+            //if there is less than 2 nobles in line, set the image to nothing
+            //also do not allow the user to click on the non-existent image
+            else if (state.deathRow.size() < 2) {
                 noble2.setImageResource(0);
                 noble2.setClickable(false);
             }
-            if(state.deathRow.size()>=3) {
+            //same as above
+            if (state.deathRow.size() >= 3) {
                 noble3.setImageResource(state.deathRow.get(2).getImage());
-            }
-            else if(state.deathRow.size()<3){
+            } else if (state.deathRow.size() < 3) {
                 noble3.setImageResource(0);
                 noble3.setClickable(false);
             }
-            if(state.deathRow.size()>=4) {
+            if (state.deathRow.size() >= 4) {
                 noble4.setImageResource(state.deathRow.get(3).getImage());
-            }
-            else if(state.deathRow.size()<4){
+            } else if (state.deathRow.size() < 4) {
                 noble4.setImageResource(0);
                 noble4.setClickable(false);
             }
-            if(state.deathRow.size()>=5) {
+            if (state.deathRow.size() >= 5) {
                 noble5.setImageResource(state.deathRow.get(4).getImage());
-            }
-            else if(state.deathRow.size()<5){
+            } else if (state.deathRow.size() < 5) {
                 noble5.setImageResource(0);
                 noble5.setClickable(false);
             }
-            if(state.deathRow.size()>=6) {
+            if (state.deathRow.size() >= 6) {
                 noble6.setImageResource(state.deathRow.get(5).getImage());
-            }
-            else if(state.deathRow.size()<6){
+            } else if (state.deathRow.size() < 6) {
                 noble6.setImageResource(0);
                 noble6.setClickable(false);
             }
-            if(state.deathRow.size()>=7) {
+            if (state.deathRow.size() >= 7) {
                 noble7.setImageResource(state.deathRow.get(6).getImage());
-            }
-            else if(state.deathRow.size()<7){
+            } else if (state.deathRow.size() < 7) {
                 noble7.setImageResource(0);
                 noble7.setClickable(false);
             }
-            if(state.deathRow.size()>=8) {
+            if (state.deathRow.size() >= 8) {
                 noble8.setImageResource(state.deathRow.get(7).getImage());
-            }
-            else if(state.deathRow.size()<8){
+            } else if (state.deathRow.size() < 8) {
                 noble8.setImageResource(0);
                 noble8.setClickable(false);
             }
-            if(state.deathRow.size()>=9) {
+            if (state.deathRow.size() >= 9) {
                 noble9.setImageResource(state.deathRow.get(8).getImage());
-            }
-            else if(state.deathRow.size()<9){
+            } else if (state.deathRow.size() < 9) {
                 noble9.setImageResource(0);
                 noble9.setClickable(false);
             }
-            if(state.deathRow.size()>=10) {
+            if (state.deathRow.size() >= 10) {
                 noble10.setImageResource(state.deathRow.get(9).getImage());
-            }
-            else if(state.deathRow.size()<10){
+            } else if (state.deathRow.size() < 10) {
                 noble10.setImageResource(0);
                 noble10.setClickable(false);
             }
-            if(state.deathRow.size()>=11) {
+            if (state.deathRow.size() >= 11) {
                 noble11.setImageResource(state.deathRow.get(10).getImage());
-            }
-            else if(state.deathRow.size()<11){
+            } else if (state.deathRow.size() < 11) {
                 noble11.setImageResource(0);
                 noble11.setClickable(false);
             }
-            if(state.deathRow.size()>=12) {
+            if (state.deathRow.size() >= 12) {
                 noble12.setImageResource(state.deathRow.get(11).getImage());
-            }
-            else if(state.deathRow.size()<12){
+            } else if (state.deathRow.size() < 12) {
                 noble12.setImageResource(0);
                 noble12.setClickable(false);
             }
@@ -339,9 +338,10 @@ public class MainActivity extends Activity {
 
     }
 
+    //set the scores of all of the players on the activity view
     public void setScores() {
 
-        if(state!=null){
+        if (state != null) {
 
             player2Score.setText(state.getComputerPlayer1Score() + "");
             player3Score.setText(state.getComputerPlayer2Score() + "");
@@ -351,10 +351,11 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void createActionSpinner(){
+    //creates the action spinner based on the initial human hand
+    public void createActionSpinner() {
 
         yourActionCards = (Spinner) findViewById(R.id.spinnerYourActions);
-        if(state!=null) {
+        if (state != null) {
             ArrayList<ActionCard> hand = state.getHumanPlayerHand();
             for (int i = 0; i < hand.size(); i++) {
 
@@ -363,10 +364,12 @@ public class MainActivity extends Activity {
         }
         setAdapterAction();
     }
-    public void createNobleSpinner(){
+
+    //creates the noble spinner
+    public void createNobleSpinner() {
 
         yourNobleCards = (Spinner) findViewById(R.id.spinnerYourNobles);
-        if(state!=null) {
+        if (state != null) {
             ArrayList<Noble> nobles = state.getHumanPlayerNobles();
             for (int i = 0; i < nobles.size(); i++) {
                 yourNobleCardNames.add(nobles.get(i).getNobleName());
@@ -393,18 +396,20 @@ public class MainActivity extends Activity {
         // bind the spinner and adapter
         yourNobleCards.setAdapter(adapter2);
     }
-    public void addListenerOnActionSelected(){
+
+    //checks what the user has selected from the spinner
+    public void addListenerOnActionSelected() {
         yourNobleCards.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
 
+                //the spinner title
                 if (position == 0) {
 
                 } else {
                     if (state != null) {
-                        //nobleCardChosen = state.getHumanPlayerNobles().get(position - 1);
-                        //imageofNobleCardChosen.setImageResource(nobleCardChosen.getImage());
+
 
                         actionCardChosen = state.getHumanPlayerHand().get(position); //-1
                         imageofActionCardChosen.setImageResource(actionCardChosen.getImage());
@@ -423,17 +428,18 @@ public class MainActivity extends Activity {
     }
 
 
-    public void addListenerOnNobleSelected(){
+    //checks what the user has selected from the spinner
+    public void addListenerOnNobleSelected() {
         yourActionCards.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
 
+                //the spinner title
                 if (position == 0) {
 
                 } else {
                     if (state != null) {
-                        //   for (int i = 0; i < state.getHumanPlayerHand().size(); i++) {
 
                         actionCardChosen = state.getHumanPlayerHand().get(position - 1); //-1
                         imageofActionCardChosen.setImageResource(actionCardChosen.getImage());
@@ -454,26 +460,31 @@ public class MainActivity extends Activity {
     }
 
 
+    //sets the orientation of the screen to landscape
     public static void lockOrientationLandscape(Activity activity) {
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
 
+    //noble in deathrow button
     public void nobleOne(View view) {
 
-        if(state!=null) {
+        //sets the image of the popup layout to that of the noble chosen
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(0).getImage());
-            deathRowNum =0;
+            deathRowNum = 0;
         }
+        //sets the pop up to be visible and does not allow the user to click on the deathrow
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
 
     }
 
+    //same as above
     public void nobleTwo(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(1).getImage());
-            deathRowNum =1;
+            deathRowNum = 1;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -481,9 +492,9 @@ public class MainActivity extends Activity {
     }
 
     public void nobleThree(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(2).getImage());
-            deathRowNum =2;
+            deathRowNum = 2;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -492,16 +503,16 @@ public class MainActivity extends Activity {
 
     public void nobleFour(View view) {
         imageofNobleCardChosen.setImageResource(state.deathRow.get(3).getImage());
-        deathRowNum =3;
+        deathRowNum = 3;
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
 
     }
 
     public void nobleFive(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(4).getImage());
-            deathRowNum =4;
+            deathRowNum = 4;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -509,9 +520,9 @@ public class MainActivity extends Activity {
     }
 
     public void nobleSix(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(5).getImage());
-            deathRowNum =5;
+            deathRowNum = 5;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -519,9 +530,9 @@ public class MainActivity extends Activity {
     }
 
     public void nobleSeven(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(6).getImage());
-            deathRowNum =6;
+            deathRowNum = 6;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -529,9 +540,9 @@ public class MainActivity extends Activity {
     }
 
     public void nobleEight(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(7).getImage());
-            deathRowNum =7;
+            deathRowNum = 7;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -539,9 +550,9 @@ public class MainActivity extends Activity {
     }
 
     public void nobleNine(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(8).getImage());
-            deathRowNum =8;
+            deathRowNum = 8;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -549,9 +560,9 @@ public class MainActivity extends Activity {
     }
 
     public void nobleTen(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(9).getImage());
-            deathRowNum =9;
+            deathRowNum = 9;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -559,9 +570,9 @@ public class MainActivity extends Activity {
     }
 
     public void nobleEleven(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(10).getImage());
-            deathRowNum =10;
+            deathRowNum = 10;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -569,9 +580,9 @@ public class MainActivity extends Activity {
     }
 
     public void nobleTwelve(View view) {
-        if(state!=null) {
+        if (state != null) {
             imageofNobleCardChosen.setImageResource(state.deathRow.get(11).getImage());
-            deathRowNum =11;
+            deathRowNum = 11;
         }
         popUpNobleZoomed.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
@@ -592,7 +603,7 @@ public class MainActivity extends Activity {
 
         popUpActionCard.setVisibility(view.VISIBLE);
         clickableDeathRow(false);
-        // pass.setVisibility(view.INVISIBLE);
+
 
     }
 
@@ -600,18 +611,20 @@ public class MainActivity extends Activity {
         //collect first noble in line
         //update score
         //add noble to spinner
-        if(state!=null){
+        if (state != null) {
 
             boolean dayDone = false;
 
             Noble firstNoble = state.deathRow.get(0);
 
-            if(state.deathRow.size()==1){
+            if (state.deathRow.size() == 1) {
                 dayDone = true;
             }
             state.collectNoble(0);
-            if(dayDone){
-                Toast.makeText(getApplicationContext(),"Day "+state.getDay()+" has begun.",Toast.LENGTH_SHORT).show();
+
+            //checks if day is done. if so, lets the user know
+            if (dayDone) {
+                Toast.makeText(getApplicationContext(), "Day " + state.getDay() + " has begun.", Toast.LENGTH_SHORT).show();
                 dayNum.setText(state.getDay() + "");
             }
 
@@ -621,24 +634,24 @@ public class MainActivity extends Activity {
             setScores();
 
             //add action card
-            if(state!=null) {
+            if (state != null) {
                 state.getHumanPlayerHand().add(state.actionDeck.get(0));
                 state.actionDeck.remove(0);
             }
             updateActionSpinner();
 
 
-
-            //promptTextBox.setText("You have opted to pass your turn.");
+            //set the prompt
             promptTurnMessage = "You have opted to \"pass\" your turn.";
             promptTextBox.setText(promptTurnMessage);
 
             state.setCurrentPlayer();
             clickableAllButtons(false);
-            Toast.makeText(getApplicationContext(),"Your turn is done, wait for other player(s) to take turn(s).",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Your turn is done, wait for other player(s) to take turn(s).", Toast.LENGTH_LONG).show();
 
 
-
+            //delays the play by 3 seconds to allow the user to see what they have
+            //done to change the state of the game
             Runnable mMyRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -651,11 +664,12 @@ public class MainActivity extends Activity {
             myHandler.postDelayed(mMyRunnable, 3000);
 
 
-
         }
 
     }
-    public void clickableAllButtons(boolean click){
+
+    //changes all buttons to be clickable or not
+    public void clickableAllButtons(boolean click) {
 
         clickableDeathRow(click);
         pass.setClickable(click);
@@ -664,7 +678,8 @@ public class MainActivity extends Activity {
         drawActionCards.setClickable(click);
     }
 
-    public void clickableDeathRow(boolean click){
+    //changes the deathrow buttons to be clickable or not
+    public void clickableDeathRow(boolean click) {
 
         noble1.setClickable(click);
         noble2.setClickable(click);
@@ -680,29 +695,28 @@ public class MainActivity extends Activity {
         noble12.setClickable(click);
     }
 
+    //updates the noble spinner after a turn is done
     public void updateNobleSpinner() {
-        if(state!=null) {
-            //for (int i = yourNobleCardNames.size()-1; i <= state.getHumanPlayerNobles().size()-1; i++) {
-                //yourNobleCardNames.add(state.getHumanPlayerNobles().get(i).getNobleName());
+        if (state != null) {
 
             yourNobleCardNames.clear();
             yourNobleCardNames.add("---Noble Cards---");
-            for(int i =0;i<state.humanPlayerNobles.size();i++){
+            for (int i = 0; i < state.humanPlayerNobles.size(); i++) {
                 yourNobleCardNames.add(state.humanPlayerNobles.get(i).getNobleName());
             }
             setAdapterNoble();
         }
     }
 
+    //updates the action spinner after a turn is done
     public void updateActionSpinner() {
-        if(state!=null) {
-            //for (int i = yourActionCardNames.size()-1; i <= state.getHumanPlayerHand().size()-1; i++) {
-                //yourActionCardNames.add(state.getHumanPlayerHand().get(i).getName());
+        if (state != null) {
+
 
             yourActionCardNames.clear();
             yourActionCardNames.add("---Action Cards---");
 
-            for(int i =0;i<state.humanPlayerHand.size();i++){
+            for (int i = 0; i < state.humanPlayerHand.size(); i++) {
                 yourActionCardNames.add(state.humanPlayerHand.get(i).getName());
             }
             setAdapterAction();
@@ -723,29 +737,42 @@ public class MainActivity extends Activity {
 
     //images that were turned button on the left hand side
     //allows the user to get a new action card if prompted
+    //used only for testing! DELETE THIS!!!
     public void actionCardDrawButton(View view) {
 
-        if(state!=null) {
+       /* if (state != null) {
             state.getHumanPlayerHand().add(state.actionDeck.get(0));
             state.actionDeck.remove(0);
         }
-        updateActionSpinner();
+        updateActionSpinner();*/
 
     }
-    public void player2UserChosen(View view){
+
+    //if player2 was chosen from the pop up on certain action cards
+    public void player2UserChosen(View view) {
+        //sets the user input to 2 for action card
         state.setIntPopUpRecievedInfo(2);
+        //makes the pop up invisible
         popUpUserChosenPlayer.setVisibility(View.INVISIBLE);
+        //goes through the ActionCard class again- actually does the action
+        //this time
         state = actionCardChosen.humanAction(state);
+        //finishes up the action
         actionChosenPart2();
 
     }
-    public void player3UserChosen(View view){
+
+    //if player3 was chosen from the pop up on certain action cards
+    //same as for player2
+    public void player3UserChosen(View view) {
         state.setIntPopUpRecievedInfo(3);
         popUpUserChosenPlayer.setVisibility(View.INVISIBLE);
         state = actionCardChosen.humanAction(state);
         actionChosenPart2();
     }
-    public void player4UserChosen(View view){
+
+    //if player4 was chosen from the pop up on certain action cards
+    public void player4UserChosen(View view) {
         state.setIntPopUpRecievedInfo(4);
         popUpUserChosenPlayer.setVisibility(View.INVISIBLE);
         state = actionCardChosen.humanAction(state);
@@ -767,10 +794,17 @@ public class MainActivity extends Activity {
             promptTurnMessage = "You have chosen to play the \"" + actionChosen + "\" card.";
             promptTextBox.setText(promptTurnMessage);
             state = actionCardChosen.humanAction(state);
-            if (state.getNeedPopUp() == true && state.getPopUpType()==0) {
+
+            //if a pop up is needed for an action card that requires the user
+            //to choose a player
+            if (state.getNeedPopUp() == true && state.getPopUpType() == 0) {
 
                 //set pop up to visible
                 //buttons = number of computer players
+                player3UserChosen.setVisibility(View.INVISIBLE);
+                player4UserChosen.setVisibility(View.INVISIBLE);
+
+
                 popUpUserChosenPlayer.setVisibility(View.VISIBLE);
 
                 player2UserChosen.setVisibility(View.VISIBLE);
@@ -785,111 +819,125 @@ public class MainActivity extends Activity {
 
 
             }
-            else if(state.getNeedPopUp()==true && state.getPopUpType()==1){
+            //if a user is needed to choose a card for an action card
+            else if (state.getNeedPopUp() == true && state.getPopUpType() == 1) {
 
+                state.addToMessage("Please choose card from DeathRow to play for the action card you have chosen.");
                 popUpActionCard.setVisibility(View.INVISIBLE);
                 clickableDeathRow(true);
                 setDeathRowLine();
 
                 chooseNoblePopUp.setVisibility(View.VISIBLE);
                 promptTextBox.setText(state.getMessage());
-            }
-            else{
+            } else {
                 actionChosenPart2();
             }
         }
 
     }
-        public void actionChosenPart2(){
-            setDeathRowLine();
+
+    //ends the human action
+    public void actionChosenPart2() {
+        setDeathRowLine();
+        updateActionSpinner();
+        updateNobleSpinner();
+
+
+        boolean dayDone = false;
+
+
+        if (state.deathRow.size() == 1) {
+            dayDone = true;
+        }
+        Noble firstNoble = state.deathRow.get(0);
+        state.collectNoble(0);
+        //checks if the day is done
+        if (dayDone) {
+            Toast.makeText(getApplicationContext(), "Day " + state.getDay() + " has begun.", Toast.LENGTH_LONG).show();
+            dayNum.setText(state.getDay() + "");
             updateActionSpinner();
-            updateNobleSpinner();
-
-
-            boolean dayDone = false;
-
-
-
-            if (state.deathRow.size() == 1) {
-                dayDone = true;
-            }
-            Noble firstNoble = state.deathRow.get(0);
-            state.collectNoble(0);
-            if (dayDone) {
-                Toast.makeText(getApplicationContext(), "Day " + state.getDay() + " has begun.", Toast.LENGTH_LONG).show();
-                dayNum.setText(state.getDay() + "");
-                updateActionSpinner();
-            }
-
-            setDeathRowLine();
-            updateNobleSpinner();
-            state.calculateScores();
-            setScores();
-
-            int removeAction = -1;
-            for (int i = 0; i < yourActionCardNames.size(); i++) {
-                if (yourActionCardNames.get(i).equals(state.getActionChosen().getName())) {
-                    removeAction = i;
-                    break;
-                }
-            }
-            if (removeAction != -1) {
-                yourActionCardNames.remove(removeAction);
-            }
-
-            int remove = -1;
-            for (int i = 0; i < state.humanPlayerHand.size(); i++) {
-                if (state.humanPlayerHand.get(i).getName().equals(state.getActionChosen().getName())) {
-                    remove = i;
-                    break;
-                }
-            }
-            if (remove != -1) {
-                state.actionDiscard.add(state.humanPlayerHand.get(remove));
-                state.humanPlayerHand.remove(remove);
-            }
-            state.humanPlayerHand.add(state.actionDeck.get(0));
-            state.actionDeck.remove(0);
-            updateActionSpinner();
-            popUpActionCard.setVisibility(View.INVISIBLE);
-
-            state.setCurrentPlayer();
-            clickableAllButtons(false);
-            Toast.makeText(getApplicationContext(), "Your turn is done, wait for other player(s) to take turn(s).", Toast.LENGTH_LONG).show();
-
-            if(state.getDay()<4 ) {
-                Runnable mMyRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        computerPlay();
-                    }
-                };
-
-
-                Handler myHandler = new Handler();
-                myHandler.postDelayed(mMyRunnable, 5000);
-            }
-
-            actionCardChosen = null;
-            imageofActionCardChosen.setImageResource(0);
         }
 
+        setDeathRowLine();
+        updateNobleSpinner();
+        state.calculateScores();
+        setScores();
 
-   public void computerPlay(){
+        //removes the action card from the action spinner
+        int removeAction = -1;
+        for (int i = 0; i < yourActionCardNames.size(); i++) {
+            if (yourActionCardNames.get(i).equals(state.getActionChosen().getName())) {
+                removeAction = i;
+                break;
+            }
+        }
+        if (removeAction != -1) {
+            yourActionCardNames.remove(removeAction);
+        }
+
+        //removes the action card that was played from the user's hand
+        int remove = -1;
+        for (int i = 0; i < state.humanPlayerHand.size(); i++) {
+            if (state.humanPlayerHand.get(i).getName().equals(state.getActionChosen().getName())) {
+                remove = i;
+                break;
+            }
+        }
+        if (remove != -1) {
+            state.actionDiscard.add(state.humanPlayerHand.get(remove));
+            state.humanPlayerHand.remove(remove);
+        }
+        //adds a new action card to the user's hand
+        state.humanPlayerHand.add(state.actionDeck.get(0));
+        state.actionDeck.remove(0);
+        //updates the action spinner
+        updateActionSpinner();
+        popUpActionCard.setVisibility(View.INVISIBLE);
+
+        state.setCurrentPlayer();
+        clickableAllButtons(false);
+        Toast.makeText(getApplicationContext(), "Your turn is done, wait for other player(s) to take turn(s).", Toast.LENGTH_LONG).show();
+
+        //if the game is not done...
+        if (state.getDay() < 4) {
+            Runnable mMyRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    computerPlay();
+                }
+            };
+
+
+            //delays the play for 5 seconds
+            Handler myHandler = new Handler();
+            myHandler.postDelayed(mMyRunnable, 5000);
+        }
+
+        actionCardChosen = null;
+        imageofActionCardChosen.setImageResource(0);
+    }
+
+
+
+    public void computerPlay() {
         //one or more comp players
 
         boolean dayDone = false;
 
-        if(state.getNumPlayers()>=2){
-           compPlayers.takeTurn(state);
+        if (state.getNumPlayers() >= 2) {
 
-            if(state.deathRow.size()==0){
+            //takes the turn of the computer player 2
+            compPlayers.takeTurn(state);
+
+            if (state.deathRow.size() == 0) {
                 dayDone = true;
             }
-            if(dayDone){
-                Toast.makeText(getApplicationContext(),"Day "+state.getDay()+" has begun.",Toast.LENGTH_LONG).show();
+            //checks if day is done
+            if (dayDone) {
+                Toast.makeText(getApplicationContext(), "Day " + state.getDay() + " has begun.", Toast.LENGTH_LONG).show();
                 dayNum.setText(state.getDay() + "");
             }
+            //resets everything
             updateNobleSpinner();
             updateActionSpinner();
             setDeathRowLine();
@@ -898,51 +946,54 @@ public class MainActivity extends Activity {
 
             promptTextBox.setText(state.getMessage());
 
-            if(state.getNumPlayers()==2 && state.getDay()<=3){
+            //if computer players are done, let user know and reset everything
+            if (state.getNumPlayers() == 2 && state.getDay() <= 3) {
                 clickableAllButtons(true);
                 setDeathRowLine();
-                Toast.makeText(getApplicationContext(),"Your Turn.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Your Turn.", Toast.LENGTH_SHORT).show();
             }
 
         }
 
         //two or more comp players
-        if(state.getNumPlayers()>=3 && state.getDay()<=3){
+        if (state.getNumPlayers() >= 3 && state.getDay() <= 3) {
 
+            //delays by 5 seconds
             Runnable mMyRunnable3 = new Runnable() {
                 @Override
                 public void run() {
 
+                    //does the same as player2
                     compPlayer2();
 
                     promptTextBox.setText(state.getMessage());
 
-                    if(state.getNumPlayers()==3 &&state.getDay()<=3){
+                    if (state.getNumPlayers() == 3 && state.getDay() <= 3) {
 
                         clickableAllButtons(true);
                         setDeathRowLine();
-                        Toast.makeText(getApplicationContext(),"Your Turn.",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Your Turn.", Toast.LENGTH_SHORT).show();
                     }
                 }
             };
 
             Handler myHandler3 = new Handler();
-            myHandler3.postDelayed(mMyRunnable3, 7000);
+            myHandler3.postDelayed(mMyRunnable3, 5000);
 
         }
 
     }
 
-    public void compPlayer2(){
+    public void compPlayer2() {
         boolean dayDone = false;
 
         compPlayers.takeTurn(state);
-        if(state.deathRow.size()==0){
+        if (state.deathRow.size() == 0) {
             dayDone = true;
         }
 
-        if(dayDone){
-            Toast.makeText(getApplicationContext(),"Day "+state.getDay()+" has begun.",Toast.LENGTH_LONG).show();
+        if (dayDone) {
+            Toast.makeText(getApplicationContext(), "Day " + state.getDay() + " has begun.", Toast.LENGTH_LONG).show();
 
             dayNum.setText(state.getDay() + "");
         }
@@ -953,42 +1004,44 @@ public class MainActivity extends Activity {
         setScores();
 
         //three comp players
-        if(state.getNumPlayers()==4 && state.getDay()<=3){
+        if (state.getNumPlayers() == 4 && state.getDay() <= 3) {
 
+            //delays by 5 seconds
             Runnable mMyRunnable4 = new Runnable() {
                 @Override
                 public void run() {
 
+                    //does the same as other computer players
                     compPlayer3();
 
                     promptTextBox.setText(state.getMessage());
 
-                    if(state.getNumPlayers()==4){
+                    if (state.getNumPlayers() == 4) {
 
                         clickableAllButtons(true);
                         setDeathRowLine();
-                        Toast.makeText(getApplicationContext(),"Your Turn.",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Your Turn.", Toast.LENGTH_SHORT).show();
                     }
                 }
             };
 
             Handler myHandler4 = new Handler();
-            myHandler4.postDelayed(mMyRunnable4, 1000);
+            myHandler4.postDelayed(mMyRunnable4, 5000);
         }
     }
 
-    public void compPlayer3(){
+    public void compPlayer3() {
 
         compPlayers.takeTurn(state);
 
         boolean dayDone = false;
 
-        if(state.deathRow.size()==1){
+        if (state.deathRow.size() == 1) {
             dayDone = true;
         }
 
-        if(dayDone){
-            Toast.makeText(getApplicationContext(),"Day "+state.getDay()+" has begun.",Toast.LENGTH_LONG).show();
+        if (dayDone) {
+            Toast.makeText(getApplicationContext(), "Day " + state.getDay() + " has begun.", Toast.LENGTH_LONG).show();
 
             dayNum.setText(state.getDay() + "");
         }
@@ -1019,10 +1072,11 @@ public class MainActivity extends Activity {
     public void goBackToPlay(View view) {
         popUpActionCard.setVisibility(view.INVISIBLE);
         clickableDeathRow(true);
-        //pass.setVisibility(view.VISIBLE);
+
 
     }
 
+    //exits the zoomed in noble pop up
     public void goBackFromZoomedNoble(View view) {
         popUpNobleZoomed.setVisibility(view.INVISIBLE);
         clickableDeathRow(true);

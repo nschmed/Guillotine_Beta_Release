@@ -144,7 +144,7 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:id="@+id/GuillotineImage"
-        android:src="@mipmap/guillotinefinal"
+        android:src="@mipmap/guillotinefinalfinal"
         android:scaleType="fitCenter"
         android:textAlignment="inherit"
         android:cropToPadding="true"

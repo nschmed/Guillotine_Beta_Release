@@ -5,17 +5,18 @@ import java.io.Serializable;
 import edu.up.cs301.guillotine.R;
 
 /**
- * This creates the deck of nobles.
+ * This creates the deck of actions.
  *
  * @author Nathan Schmedake
  * @author Muhammed Acar
  * @author Melanie Martinell
  * @author Linnea Bair
- * @version November 2015
+ * @version December 2015
  */
 public class BuildActionDeck implements Serializable
 {
     private static final long serialVersionUID = 77L;
+    //Build the action card deck
     protected ActionCard ActionList[] = {new ActionCard("After You....", R.drawable.afteryou), new ActionCard("Bribed Guards", R.drawable.bribedguards), new ActionCard("Church Support", R.drawable.churchsupport), new ActionCard("Civic Pride", R.drawable.civicpride), new ActionCard("Civic Support", R.drawable.civicsupport), new ActionCard("Clothing Swap", R.drawable.clothingswap), new ActionCard("Clothing Swap", R.drawable.clothingswap),
         new ActionCard("Confusion in Line", R.drawable.confusioninline), new ActionCard("Double Feature", R.drawable.doublefeature), new ActionCard("Double Feature", R.drawable.doublefeature), new ActionCard("Escape!", R.drawable.escape), new ActionCard("Extra Cart", R.drawable.extracart), new ActionCard("Extra Cart", R.drawable.extracart), new ActionCard("Fainting Spell", R.drawable.faintingspell), new ActionCard("Fainting Spell", R.drawable.faintingspell),
         new ActionCard("Fled to England", R.drawable.fledtoengland), new ActionCard("Forced Break", R.drawable.forcedbreak), new ActionCard("Foreign Support", R.drawable.foreignsupport), new ActionCard("Forward March", R.drawable.forwardmarch), new ActionCard("Fountain of Blood", R.drawable.fountainofblood), new ActionCard("Friend of the Queen", R.drawable.friendofthequeen), new ActionCard("Friend of the Queen", R.drawable.friendofthequeen),
@@ -25,11 +26,17 @@ public class BuildActionDeck implements Serializable
         new ActionCard("Political Influence", R.drawable.politicalinfluence), new ActionCard("Public Demand", R.drawable.publicdemand), new ActionCard("Public Demand", R.drawable.publicdemand), new ActionCard("Pushed", R.drawable.pushed), new ActionCard("Pushed", R.drawable.pushed), new ActionCard("Rain Delay", R.drawable.raindelay), new ActionCard("Scarlet Pimpernel", R.drawable.scarletpimpernel), new ActionCard("Stumble", R.drawable.stumble),
         new ActionCard("Stumble", R.drawable.stumble), new ActionCard("The Long Walk", R.drawable.thelongwalk), new ActionCard("The Long Walk", R.drawable.thelongwalk), new ActionCard("'Tis a Far Better Thing", R.drawable.tisafarbetterthing), new ActionCard("Tough Crowd", R.drawable.toughcrowd), new ActionCard("Trip", R.drawable.trip), new ActionCard("Trip", R.drawable.trip), new ActionCard("Was That My Name?", R.drawable.wasthatmyname)};
 
-
+    /*
+     * Constructor for the action deck
+     */
     public BuildActionDeck()
     {
+        //merely creates the object, the list is in the instance variable
     }
 
+    /*
+     * Getter for the action deck, used by the gamestate constructor.
+     */
     public ActionCard[] getActionList() {
         return ActionList;
     }

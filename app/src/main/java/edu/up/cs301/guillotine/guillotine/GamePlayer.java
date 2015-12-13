@@ -1,7 +1,7 @@
 package edu.up.cs301.guillotine.guillotine;
 
 /**
- * A player who plays a (generic) game. Each class that implements a player for
+ * A player who plays a game. Each class that implements a player for
  * a particular game should implement this interface.
  *
  * @author Muhammed Acar
@@ -13,8 +13,9 @@ package edu.up.cs301.guillotine.guillotine;
 
 public interface GamePlayer {
 
-	//plays a card, as decided by the class
+	//takes a turn, which should also involve playing a card.
 	public GuillotineState takeTurn(GuillotineState state);
+	//plays a card, as decided by the class
 	public GuillotineState playCard(GuillotineState state);
 
 }// interface GamePlayer

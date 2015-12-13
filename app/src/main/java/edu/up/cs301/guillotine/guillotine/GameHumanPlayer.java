@@ -7,9 +7,10 @@ import android.util.Log;
 /**
  * class GameHumanPlayer
  * 
- * is an abstract base class for a player that is controlled by a human. For any
+ * Is an abstract base class for a player that is controlled by a human. For any
  * particular game, a subclass should be created that can display the current
- * game state and responds to user commands.
+ * game state and responds to user commands. May be used, may not be depending on
+ * implementation.
  *
  * @author Nathan Schmedake
  * @author Muhammed Acar
@@ -37,6 +38,7 @@ public abstract class GameHumanPlayer implements GamePlayer{
 
 	}
 
+	//This allows for a card to be played.
 	public GuillotineState playCard(GuillotineState state){
 		return null;
 	}

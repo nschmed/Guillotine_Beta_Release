@@ -22,7 +22,6 @@ import edu.up.cs301.guillotine.R;
  */
 public class RulesScreen extends AppCompatActivity
 {
-    //buttons
     Button close;
 
     @Override
@@ -31,8 +30,10 @@ public class RulesScreen extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rules_screen);
 
+        //initialize close button
         close = (Button) findViewById(R.id.close);
 
+        //lock landscape orientation
         lockOrientationLandscape(RulesScreen.this);
     }
     public static void lockOrientationLandscape(Activity activity) {

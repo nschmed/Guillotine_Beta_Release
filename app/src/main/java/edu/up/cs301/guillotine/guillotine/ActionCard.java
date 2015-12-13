@@ -14,29 +14,55 @@ import java.util.Collections;
  * @author Muhammed Acar
  * @author Melanie Martinell
  * @author Linnea Bair
- * @version November 2015
+ * @version December 2015
  */
 public class ActionCard implements Serializable {
     private static final long serialVersionUID = 7L;
 
-    private String name;
-    private int image;
+    private String name; // the name of the action card
+    private int image; // the picture of the associated card
+
+    /*
+     * Constructor, assigning a name an a picture
+     */
     public ActionCard(String givenName, int pic)
     {
         this.name = givenName;
         this.image = pic;
     }
 
+    /*
+     * Getter for the image
+     */
     public int getImage(){
         return image;
     }
+
+    /*
+     * Getter for the name
+     */
     public String getName() {return name; }
+
+    /*
+     * humanAction
+     *      This method describes the action for every action card, testing for its name
+     *      and then completing the action in conjunction with the game state.  For humans,
+     *      it might be called twice, if the action requires another input.
+     *
+     * @param curState
+     *      The current state of the game
+     * @return curState
+     *      The modified state of the game
+     */
     public GuillotineState humanAction(GuillotineState curState){
         // make if statements for every action card
 
         double rand = Math.random();
 
         if(name.equals("After You....")){
+            //Put the noble at the front of the line into another player's score pile
+            //Creates a popup that allows the human player to choose a player to do this to.
+            //Takes that information when the pop up info is received and modifies the game state.
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(0); //0 = choose a player (number of players = number of buttons on pop up
@@ -66,6 +92,7 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Bribed Guards")){
+            //Move the noble at the front of the line to the end of the line
 
             Noble firstNob = curState.deathRow.get(0);
             curState.addToMessage(firstNob.getNobleName() + " was moved to the end of the line. ");
@@ -74,16 +101,20 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Church Support")){
+            //Put this card in front of you. It is worth +1 for each Blue noble in your score pile
+            //Scoring is implemented in the calculateScore method of game state
 
             curState.setHasChurchSupport(curState.getCurrentPlayer());
             curState.addToMessage("You will receive +1 for each blue noble you collect. ");
 
         }
         else if (name.equals("Civic Pride")){
+            //Move a Green noble forward up to 2 places in line
+            //This method is implemented randomly for the human player.
 
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for (int i = 2; i<deathRow.size();i++){
-                if(deathRow.get(i).getNobleColor() == "green"){
+                if(deathRow.get(i).getNobleColor().equals("green")){
                     Noble card = deathRow.get(i);
                     deathRow.remove(i);
                     if(rand<0.5){
@@ -101,13 +132,15 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Civic Support")){
-
-            curState.setHasChurchSupport(curState.getCurrentPlayer());
+            //Play this card in front of you.  It is worth +1 point for each Green noble in your score pile.
+            curState.setHasCivicSupport(curState.getCurrentPlayer());
             curState.addToMessage("You will receive +1 for each blue noble you collect. ");
 
 
         }
         else if (name.equals("Clothing Swap")){
+            //Choose any noble in line and discard it.  Replace it with the top noble from the noble deck.
+            //A popup allows the human player to choose a noble to do this to, then the game state is modified.
             //curState.resetMessage();
             curState.addToMessage("Please choose Noble to swap...");
 
@@ -123,27 +156,27 @@ public class ActionCard implements Serializable {
 
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
 
-
-
-
-            }
+        }
         else if (name.equals("Confusion in Line")){
+            //Choose a player.  Randomly rearrange the line just before that player collects his or her next noble.
+            //This is implemented as rearranging the row before you play.
 
             curState.shuffleDeathRow();
             curState.addToMessage("Death Row was shuffled. ");
 
         }
         else if (name.equals("Double Feature")){
+            //Collect an additional noble from the front of the line this turn.
 
             curState.collectNoble(0);
-
-        curState.addToMessage("You get two nobles! ");
-
+            curState.addToMessage("You get two nobles! ");
         }
         else if (name.equals("Escape!")){
+            //Randomly choose 2 nobles in line and discard them.  Randomly rearrange
+            //the remaining nobles in line.
+
             int randChosenNob1 = (int)(Math.random()*(curState.deathRow.size()));
             curState.nobleDiscard.add(curState.deathRow.get(randChosenNob1));
             curState.deathRow.remove(randChosenNob1);
@@ -154,6 +187,8 @@ public class ActionCard implements Serializable {
             curState.shuffleDeathRow();
         }
         else if (name.equals("Extra Cart")){
+            //Add 3 nobles from the noble deck to the end of the line
+            //Adds 3 if line is 9 or less, 2 if line is 10, and 1 if line is 11 long
             if(curState.deathRow.size()<=9){
                 for(int i =0;i<3;i++) {
                     curState.deathRow.add(curState.nobleDeck.get(0));
@@ -173,7 +208,8 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("Fainting Spell")){
-
+            //Move a noble backward up to 3 places in line
+            //This is implemented randomly
             ArrayList<Noble> deathRow = curState.getDeathRow();
             if(deathRow.size()>=4) {
                 int randIndex = (int) (Math.random() * (deathRow.size() - 3));
@@ -200,23 +236,25 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Fled to England")){
+            //Discard any noble in line
+            //Allows you to choose a noble to discard
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(1); //1 = choose a noble form line
 
             if(curState.getIntPopUpRecievedInfo()!=-1) {
-
                 curState.nobleDiscard.add(curState.deathRow.get(curState.getIntPopUpRecievedInfo()));
                 curState.deathRow.remove(curState.getIntPopUpRecievedInfo());
 
 
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
 
         }
         else if (name.equals("Forced Break")){
+            //All other players must discard an action card at random
+            //Check is 2,3, or 4 players and has all choose a card to discard
             if(curState.getNumPlayers()==2){
                 int rand1 = (int)(Math.random()*curState.computerPlayer1Hand.size());
 
@@ -224,37 +262,37 @@ public class ActionCard implements Serializable {
                 curState.computerPlayer1Hand.remove(rand1);
             }
             else if(curState.getNumPlayers()==3){
-                    int rand1 = (int)(Math.random()*curState.computerPlayer1Hand.size());
-                    int rand3 = (int)(Math.random()*curState.computerPlayer2Hand.size());
+                int rand1 = (int)(Math.random()*curState.computerPlayer1Hand.size());
+                int rand3 = (int)(Math.random()*curState.computerPlayer2Hand.size());
 
-                    curState.actionDiscard.add(curState.computerPlayer1Hand.get(rand1));
-                    curState.actionDiscard.add(curState.computerPlayer2Hand.get(rand3));
-                    curState.computerPlayer1Hand.remove(rand1);
-                    curState.computerPlayer2Hand.remove(rand3);
-
+                curState.actionDiscard.add(curState.computerPlayer1Hand.get(rand1));
+                curState.actionDiscard.add(curState.computerPlayer2Hand.get(rand3));
+                curState.computerPlayer1Hand.remove(rand1);
+                curState.computerPlayer2Hand.remove(rand3);
             }
             else if(curState.getNumPlayers()==4) {
-                    int rand1 = (int) (Math.random() * curState.computerPlayer1Hand.size());
-                    int rand3 = (int) (Math.random() * curState.computerPlayer2Hand.size());
-                    int rand4 = (int) (Math.random() * curState.computerPlayer3Hand.size());
+                int rand1 = (int) (Math.random() * curState.computerPlayer1Hand.size());
+                int rand3 = (int) (Math.random() * curState.computerPlayer2Hand.size());
+                int rand4 = (int) (Math.random() * curState.computerPlayer3Hand.size());
 
-                    curState.actionDiscard.add(curState.computerPlayer1Hand.get(rand1));
-                    curState.actionDiscard.add(curState.computerPlayer2Hand.get(rand3));
-                    curState.actionDiscard.add(curState.computerPlayer3Hand.get(rand4));
-                    curState.computerPlayer1Hand.remove(rand1);
-                    curState.computerPlayer2Hand.remove(rand3);
-                    curState.computerPlayer3Hand.remove(rand4);
-
+                curState.actionDiscard.add(curState.computerPlayer1Hand.get(rand1));
+                curState.actionDiscard.add(curState.computerPlayer2Hand.get(rand3));
+                curState.actionDiscard.add(curState.computerPlayer3Hand.get(rand4));
+                curState.computerPlayer1Hand.remove(rand1);
+                curState.computerPlayer2Hand.remove(rand3);
+                curState.computerPlayer3Hand.remove(rand4);
             }
+
         }
         else if (name.equals("Foreign Support")){
+            //Put this card in front of you.  Draw an action card whenever you collect a purple noble
 
             curState.setHasForeignSupport(curState.getCurrentPlayer());
             curState.addToMessage("You will receive one action card for each purple noble you collect. ");
-
-
         }
         else if (name.equals("Forward March")){
+            //Move a Palace Guard to the front of the line
+            //Moves the first Palace Guard found to the front.
 
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for(int i = 0; i < deathRow.size(); i++) {
@@ -265,18 +303,21 @@ public class ActionCard implements Serializable {
                     curState.addToMessage("A Palace Guard was moved to the front of the line. ");
                     break;
                 }
-
             }
             curState.setDeathRow(deathRow);
 
         }
         else if (name.equals("Fountain of Blood")){
+            //Put this card in front of you.  It is worth 2 points.
+            //Implements a change in a game state variable.
 
             curState.setHasFountainOfBlood(curState.getCurrentPlayer());
             curState.addToMessage(("You get two bonus points."));
 
         }
         else if (name.equals("Friend of the Queen")){
+            //Move a noble backward up to 2 places in line.
+            //Player chan choose card to move, number of spaces is random.
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(1); //1 = choose a noble form line
@@ -287,67 +328,62 @@ public class ActionCard implements Serializable {
 
                 double randSpaces = Math.random();
                 curState.deathRow.remove(curState.getIntPopUpRecievedInfo());
-                if (randSpaces>=.5)
-                {
-                    curState.deathRow.add((curState.getIntPopUpRecievedInfo()+1), card);
+                if (randSpaces >= .5) {
+                    curState.deathRow.add((curState.getIntPopUpRecievedInfo() + 1), card);
                     curState.addToMessage(card.getNobleName() + " was moved backward one space. ");
-                }
-                else if (randSpaces<.5)
-                {
-                    curState.deathRow.add((curState.getIntPopUpRecievedInfo()+2), card);
+                } else if (randSpaces < .5) {
+                    curState.deathRow.add((curState.getIntPopUpRecievedInfo() + 2), card);
                     curState.addToMessage(card.getNobleName() + " was moved backward two spaces. ");
                 }
                 curState.setDeathRow(curState.deathRow);
 
-
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
-
-
 
         }
         else if (name.equals("Ignoble Noble")){
-
+            //Move a noble forward exactly 4 places.
+            //Allows human to choose a noble to move, does not move if noble cannot move forward 4 spots
             curState.setNeedPopUp(true);
             curState.setPopUpType(1); //1 = choose a noble form line
 
             if(curState.getIntPopUpRecievedInfo()!=-1) {
-
-
-            ArrayList<Noble> deathRow = curState.getDeathRow();
+                ArrayList<Noble> deathRow = curState.getDeathRow();
                 Noble card = curState.deathRow.get(curState.getIntPopUpRecievedInfo());
                 int numCard = curState.getIntPopUpRecievedInfo();
 
 
-            if(curState.deathRow.size()>4) {
+                 if(curState.deathRow.size()>4) {
 
-                if(curState.getIntPopUpRecievedInfo()<5){
-                    numCard= 5;
-                    card = curState.deathRow.get(numCard);
-                }
+                    if(curState.getIntPopUpRecievedInfo()<5){
+                        numCard= 5;
+                        card = curState.deathRow.get(numCard);
+                    }
 
+                     deathRow.remove(numCard);
+                     deathRow.add((numCard - 4), card);
+                    curState.addToMessage(card.getNobleName() + " was moved forward four spaces. ");
+               }
 
-                deathRow.remove(numCard);
-                deathRow.add((numCard - 4), card);
-                curState.addToMessage(card.getNobleName() + " was moved forward four spaces. ");
-            }
-            curState.setDeathRow(deathRow);
+                curState.setDeathRow(deathRow);
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
 
         }
         else if (name.equals("Indifferent Public")){
+            //Put this card in front of you. Any Gray nobles in your score pile are worth 1 instead
+            //of their normal values.
+            //Changes a gamestate variable to reflect this.  Scoring done in calculateScore method.
+
             curState.setHasIndifferentPublic(curState.getCurrentPlayer());
             curState.addToMessage("You will receive one point for each gray noble instead of its normal value. ");
 
         }
         else if (name.equals("Information Exchange")){
+            //Trade hands with another player.
+            //Popup allows a player to be chosen by human player to switch hands with
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(0); //0 = choose a player (number of players = number of buttons on pop up
@@ -386,9 +422,10 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Lack of Faith")){
+            //If there are any Blue nobles in line, move the one nearest the front of the line to the front of the line.
 
             for(int i = 0; i<curState.deathRow.size();i++){
-                if(curState.deathRow.get(i).getNobleColor() == "blue"){
+                if(curState.deathRow.get(i).getNobleColor().equals("blue")){
                     Noble card = curState.deathRow.get(i);
                     curState.deathRow.remove(i);
                     curState.deathRow.add(0,card);
@@ -399,9 +436,11 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Late Arrival")){
+            //Look at top 3 cards of the noble deck and add any one of them to the end of the line.
+            //Melanie, how is this done?
 
             curState.setNeedPopUp(true);
-            curState.setPopUpType(1); //1 = choose a noble form line
+            curState.setPopUpType(1); //1 = choose a noble from line
 
             if(curState.getIntPopUpRecievedInfo()!=-1) {
                 int num = curState.getIntPopUpRecievedInfo();
@@ -416,16 +455,14 @@ public class ActionCard implements Serializable {
                 curState.deathRow.remove(num);
                 curState.deathRow.add(deathRowLast, numNob);
 
-
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
-
 
         }
         else if (name.equals("Let Them Eat Cake")){
+            //If Marie Antoinette is in line, move her to the front of the line.
+            //Checks for Marie Antoinette and moves her if she is there.
 
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for(int i = 1; i < deathRow.size(); i++)
@@ -443,6 +480,8 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("L'Idiot")){
+            //Move a noble forward up to 2 places in line
+            //Moves a noble of the user's choice one or two places forward in line randomly
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(1); //1 = choose a noble form line
@@ -454,16 +493,12 @@ public class ActionCard implements Serializable {
                 Noble card = curState.deathRow.get(curState.getIntPopUpRecievedInfo());
                 int numCard = curState.getIntPopUpRecievedInfo();
 
-
-
                 if(deathRow.size()>2) {
 
                     if(curState.getIntPopUpRecievedInfo()<2){
                         numCard= 2;
                         card = deathRow.get(numCard);
                     }
-
-
 
                     double randSpaces = Math.random();
                     deathRow.remove(numCard);
@@ -479,17 +514,16 @@ public class ActionCard implements Serializable {
 
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
-
 
         }
         else if (name.equals("Majesty")){
+            //Move a Purple noble forward up to 2 places in line.
+            //This is implemented randomly.
 
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for (int i = 2; i<deathRow.size();i++){
-                if(deathRow.get(i).getNobleColor() == "purple"){
+                if(deathRow.get(i).getNobleColor().equals("purple")){
                     Noble card = deathRow.get(i);
                     deathRow.remove(i);
                     if(rand<0.5){
@@ -507,6 +541,10 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Mass Confusion")){
+            //Put all nobles in line in the noble deck.  Shuffle the noble deck and deal out the
+            //same number of nobles in a new line.
+            //This is done using a dummy arrayList
+
             ArrayList<Noble> deathRow = curState.getDeathRow();
             int numNobles = deathRow.size();
             ArrayList<Noble> currentNobleDeck = curState.getNobleDeck();
@@ -520,12 +558,15 @@ public class ActionCard implements Serializable {
             curState.setNobleDeck(currentNobleDeck);
             curState.shuffleNobleDeck();
             curState.createDeathRow(numNobles);
+
         }
         else if (name.equals("Military Might")){
+            //Move a Red noble forward up to 2 places in line.
+            //This is implemented randomly.
 
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for (int i = 2; i<deathRow.size();i++){
-                if(deathRow.get(i).getNobleColor() == "red"){
+                if(deathRow.get(i).getNobleColor().equals("red")){
                     Noble card = deathRow.get(i);
                     deathRow.remove(i);
                     if(rand<0.5){
@@ -543,12 +584,17 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Military Support")){
+            //Put this card in front of you.  It is worth +1 for each Red noble in your score pile.
+            //This is implemented in the calculateScore method in gamestate.
 
             curState.setHasMilitarySupport(curState.getCurrentPlayer());
             curState.addToMessage("You will receive +1 for each red noble you collect. ");
 
         }
         else if (name.equals("Milling in Line")){
+            //Randomly rearrange the first five nobles in line.
+            //Creates a dummy line for the first five to shuffle and re-insert into the line.
+
             ArrayList<Noble> deathRow = curState.getDeathRow();
             ArrayList<Noble> firstFive = new ArrayList<Noble>();
 
@@ -572,7 +618,6 @@ public class ActionCard implements Serializable {
                 firstFive.add(five);
             }
 
-
             Collections.shuffle(firstFive);
 
             int goThroughArray = 5;
@@ -585,53 +630,52 @@ public class ActionCard implements Serializable {
             for(int i = 0;i<goThroughArray;i++){
                 deathRow.add(i,firstFive.get(i));
             }
-            /*deathRow.add(0, firstFive.get(0));
-            deathRow.add(1, firstFive.get(1));
-            deathRow.add(2, firstFive.get(2));
-            deathRow.add(3, firstFive.get(3));
-            deathRow.add(4, firstFive.get(4));*/
+
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Missed!")){
+            //Chose a player.  That player must place the last noble he or she collected at the end of the line.
+            //This is implemented as the last player to collect a noble has theirs removed.
 
-
-
-            if (curState.getNumPlayers() == 2) {
-                Noble card = curState.computerPlayer1Nobles.get(curState.computerPlayer1Nobles.size()-1);
-                curState.computerPlayer1Nobles.remove(curState.computerPlayer1Nobles.size() - 1);
-                curState.deathRow.add(card);
-                curState.addToMessage(card.getNobleName() + " was moved from Player 2's hand to death row. ");
-
-            }
-            if (curState.getNumPlayers() == 3) {
-
-                        Noble card = curState.computerPlayer2Nobles.get(curState.computerPlayer2Nobles.size()-1);
-                        curState.computerPlayer2Nobles.remove(curState.computerPlayer2Nobles.size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from Player 3's hand to death row. ");
-
-
-            }
-            if (curState.getNumPlayers() == 4) {
-
-
-                Noble card = curState.computerPlayer3Nobles.get(curState.computerPlayer3Nobles.size() - 1);
-                curState.computerPlayer3Nobles.remove(curState.computerPlayer3Nobles.size() - 1);
-                curState.deathRow.add(card);
-                curState.addToMessage(card.getNobleName() + " was moved from Player 4's hand to death row. ");
-
-
-            }
-
-
-        }
-        else if (name.equals("Missing Heads")){
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(0); //0 = choose a player (number of players = number of buttons on pop up
 
             if(curState.getIntPopUpRecievedInfo()!=-1){
 
+            if (curState.getIntPopUpRecievedInfo() == 2 && curState.computerPlayer1Nobles.size()>0) {
+                Noble card = curState.computerPlayer1Nobles.get(curState.computerPlayer1Nobles.size() - 1);
+                curState.computerPlayer1Nobles.remove(curState.computerPlayer1Nobles.size() - 1);
+                curState.deathRow.add(card);
+                curState.addToMessage(card.getNobleName() + " was moved from Player 2's hand to death row. ");
+            }
+            if (curState.getIntPopUpRecievedInfo() == 3 && curState.computerPlayer2Nobles.size()>0) {
+                Noble card = curState.computerPlayer2Nobles.get(curState.computerPlayer2Nobles.size()-1);
+                curState.computerPlayer2Nobles.remove(curState.computerPlayer2Nobles.size() - 1);
+                curState.deathRow.add(card);
+                curState.addToMessage(card.getNobleName() + " was moved from Player 3's hand to death row. ");
+            }
+            if (curState.getIntPopUpRecievedInfo() == 4 && curState.computerPlayer3Nobles.size()>0) {
+                Noble card = curState.computerPlayer3Nobles.get(curState.computerPlayer3Nobles.size() - 1);
+                curState.computerPlayer3Nobles.remove(curState.computerPlayer3Nobles.size() - 1);
+                curState.deathRow.add(card);
+                curState.addToMessage(card.getNobleName() + " was moved from Player 4's hand to death row. ");
+            }
+                curState.setIntPopUpRecievedInfo(-1);
+                curState.setNeedPopUp(false);
+
+            }
+
+
+        }
+        else if (name.equals("Missing Heads")){
+            //Choose a player. That player loses a random noble from his or her score pile.
+            //Allows you to choose this player and removes a noble from them.
+
+            curState.setNeedPopUp(true);
+            curState.setPopUpType(0); //0 = choose a player (number of players = number of buttons on pop up
+
+            if(curState.getIntPopUpRecievedInfo()!=-1){
                 // int playerChosen = curState.getIntPopUpRecievedInfo();
 
                 if(curState.getIntPopUpRecievedInfo()==2){
@@ -654,16 +698,14 @@ public class ActionCard implements Serializable {
                     curState.addToMessage("Player 4 lost the "+ card.getNobleName() + " card. ");
                     curState.computerPlayer3Nobles.remove(cardNum);
                 }
-
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
-
 
         }
         else if (name.equals("Opinionated Guards")){
+            //Rearrange the first 4 nobles in line any way you wish.
+            //This is random for now, may be changed later.
 
             ArrayList<Noble> deathRow = curState.getDeathRow();
             ArrayList<Noble> firstFour = new ArrayList<Noble>();
@@ -683,27 +725,23 @@ public class ActionCard implements Serializable {
                 Noble four = deathRow.get(3);
                 firstFour.add(four);
             }
-
             int numGoThrough = 4;
             if(curState.deathRow.size()<4){
                 numGoThrough=curState.deathRow.size();
             }
-
             Collections.shuffle(firstFour);
-
             for(int i =0;i<numGoThrough;i++) {
                 curState.removeFromDeathRow(0);
             }
             for(int i =0;i<numGoThrough;i++) {
                 deathRow.add(i, firstFour.get(i));
             }
-
             curState.addToMessage("The first four nobles in line were rearranged. ");
             curState.setDeathRow(deathRow);
 
-
         }
         else if (name.equals("Political Influence")){
+            //Draw 3 additional action cards at the end of your turn.  Do not collect a noble this turn.
 
             curState.drawActionCard(curState.getCurrentPlayer());
             curState.drawActionCard(curState.getCurrentPlayer());
@@ -713,6 +751,8 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Public Demand")){
+            //Move any noble in line to the front of the line.
+            //Allows you to choose a noble.
 
             //curState.resetMessage();
             curState.addToMessage("Please choose Noble to kill next...");
@@ -728,12 +768,12 @@ public class ActionCard implements Serializable {
 
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
 
         }
         else if (name.equals("Pushed")){
+            //Move a noble forward exactly 2 places in line.
+            //Does not allow you to choose the noble in 0 or 1 spot, but any others are fair game.
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(1); //1 = choose a noble form line
@@ -745,15 +785,12 @@ public class ActionCard implements Serializable {
                 Noble card = curState.deathRow.get(curState.getIntPopUpRecievedInfo());
                 int numCard = curState.getIntPopUpRecievedInfo();
 
-
-
                 if(deathRow.size()>2) {
 
                     if(curState.getIntPopUpRecievedInfo()<2){
                         numCard= 3;
                         card = deathRow.get(numCard);
                     }
-
 
                         deathRow.remove(numCard);
 
@@ -765,12 +802,12 @@ public class ActionCard implements Serializable {
 
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
 
         }
         else if (name.equals("Rain Delay")){
+            //Shuffle all players' hands into the action deck and deal out 5 new action cards to each player.
+
             if (curState.getNumPlayers() == 2) {
                 curState.getHumanPlayerHand().clear();
                 curState.getComputerPlayer1Hand().clear();
@@ -789,6 +826,8 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("Scarlet Pimpernel")){
+            //The day ends after you finish your turn.  Discard any remaining nobles in line.
+            //Sets death row to only the first card.  After this is collected the day will automatically end.
 
             Noble card = curState.getDeathRow().get(0);
             curState.deathRow.clear();
@@ -796,28 +835,24 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Stumble")){
+            //Move a noble forward exactly 1 place.
+            //Allows human player to choose this.
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(1); //1 = choose a noble form line
 
             if(curState.getIntPopUpRecievedInfo()!=-1) {
-
                 ArrayList<Noble> deathRow = curState.getDeathRow();
 
                 Noble card = curState.deathRow.get(curState.getIntPopUpRecievedInfo());
                 int numCard = curState.getIntPopUpRecievedInfo();
-
-
-
                 if(deathRow.size()>1) {
 
                     if(curState.getIntPopUpRecievedInfo()<1){
                         numCard= 2;
                     }
 
-
                     deathRow.remove(numCard);
-
                     deathRow.add((numCard - 1), card);
                     curState.addToMessage(card.getNobleName() + " was moved forward one space. ");
 
@@ -826,11 +861,12 @@ public class ActionCard implements Serializable {
 
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
 
         }
         else if (name.equals("The Long Walk")){
+            //Reverse the order of the line.
+            //Uses a dummy line.
 
             ArrayList<Noble> curDeathRow = curState.getDeathRow();
             ArrayList<Noble> newDeathRow = new ArrayList<Noble>();
@@ -843,6 +879,8 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("'Tis a Far Better Thing")){
+            //Move a noble forward exactly 3 places in line.
+            //This allows the player to choose which noble to do that to, after the third noble in line.
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(1); //1 = choose a noble form line
@@ -854,17 +892,12 @@ public class ActionCard implements Serializable {
                 Noble card = curState.deathRow.get(curState.getIntPopUpRecievedInfo());
                 int numCard = curState.getIntPopUpRecievedInfo();
 
-
-
                 if(deathRow.size()>3) {
 
                     if(curState.getIntPopUpRecievedInfo()<3){
                         numCard= 4;
                     }
-
-
                     deathRow.remove(numCard);
-
                     deathRow.add((numCard - 3), card);
                     curState.addToMessage(card.getNobleName() + " was moved forward three spaces. ");
 
@@ -873,12 +906,12 @@ public class ActionCard implements Serializable {
 
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
 
         }
         else if (name.equals("Tough Crowd")){
+            //Put this card in front of another player.  It is worth -2 points to that player.
+            //Allows player to choose who this happens to.
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(0); //0 = choose a player (number of players = number of buttons on pop up
@@ -899,24 +932,21 @@ public class ActionCard implements Serializable {
 
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
 
         }
         else if (name.equals("Trip")){
+            //Move a noble backward exactly one place in line.  You may play another action card this turn.
+            //Allows player to choose, then sets the second action ability to true.
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(1); //1 = choose a noble form line
 
             if(curState.getIntPopUpRecievedInfo()!=-1) {
-
                 ArrayList<Noble> deathRow = curState.getDeathRow();
 
                 Noble card = curState.deathRow.get(curState.getIntPopUpRecievedInfo());
                 int numCard = curState.getIntPopUpRecievedInfo();
-
-
 
                 if(deathRow.size()>2) {
 
@@ -926,23 +956,19 @@ public class ActionCard implements Serializable {
                     }
 
                     deathRow.remove(numCard);
-
                     deathRow.add((numCard + 1), card);
-
                     curState.addToMessage(card.getNobleName() + " was moved backwards one space. ");
-
                 }
                 curState.setDeathRow(deathRow);
-
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
                 curState.setPlaySecondAction(true);
-
             }
-
 
         }
         else if (name.equals("Was That My Name?")){
+            //Move a noble forward up to 3 places in line.
+            //Allows user to choose that noble, the number of spaces forward is random.
 
             curState.setNeedPopUp(true);
             curState.setPopUpType(1); //1 = choose a noble form line
@@ -950,19 +976,14 @@ public class ActionCard implements Serializable {
             if(curState.getIntPopUpRecievedInfo()!=-1) {
 
                 ArrayList<Noble> deathRow = curState.getDeathRow();
-
                 Noble card = curState.deathRow.get(curState.getIntPopUpRecievedInfo());
                 int numCard = curState.getIntPopUpRecievedInfo();
-
-
 
                 if(deathRow.size()>3) {
 
                     if(curState.getIntPopUpRecievedInfo()<3){
                         numCard= 3;
                     }
-
-
 
                     double randSpaces = Math.random();
                     deathRow.remove(numCard);
@@ -982,10 +1003,7 @@ public class ActionCard implements Serializable {
 
                 curState.setIntPopUpRecievedInfo(-1);
                 curState.setNeedPopUp(false);
-
             }
-
-
         }
 
         return curState;
@@ -995,6 +1013,7 @@ public class ActionCard implements Serializable {
         double rand = Math.random();
 
         if(name.equals("After You....")){
+            //Put the noble at the front of the line into another player's score pile
             if (curState.getNumPlayers() == 2) {
                 curState.collectNoble(0);
 
@@ -1059,7 +1078,7 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("Bribed Guards")){
-
+            //Move the noble at the front of the line to the end of the line
             Noble firstNob = curState.deathRow.get(0);
             curState.addToMessage(firstNob.getNobleName() + " was moved to the end of the line. ");
             curState.removeFromDeathRow(0);
@@ -1067,14 +1086,17 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Church Support")){
+            //Put this card in front of you. It is worth +1 for each Blue noble in your score pile
+            //Scoring is implemented in the calculateScore method of game state
             curState.setHasChurchSupport(curState.getCurrentPlayer());
             curState.addToMessage("Player " + (curState.getCurrentPlayer()+1) + " will receive +1 for each blue noble they collect. ");
 
         }
         else if (name.equals("Civic Pride")){
+            //Move a Green noble forward up to 2 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for (int i = 2; i<deathRow.size();i++){
-                if(deathRow.get(i).getNobleColor() == "green"){
+                if(deathRow.get(i).getNobleColor().equals("green")){
                     Noble card = deathRow.get(i);
                     deathRow.remove(i);
                     if(rand<0.5){
@@ -1092,11 +1114,12 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Civic Support")){
+            //Play this card in front of you.  It is worth +1 for each Green noble in your score pile
             curState.setHasCivicSupport(curState.getCurrentPlayer());
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " will receive +1 for each green noble they collect. ");
         }
         else if (name.equals("Clothing Swap")){
-
+            //Choose any noble in line and discard it.  Replace it with the top noble from the noble deck.
             int randNob = (int)(Math.random()*(curState.deathRow.size()));
             Noble leavingNob = curState.deathRow.get(randNob);
             Noble arrivingNob = curState.nobleDeck.get(0);
@@ -1106,13 +1129,13 @@ public class ActionCard implements Serializable {
             curState.addToMessage(leavingNob.getNobleName() + " was replaced with " + arrivingNob.getNobleName() + ". ");
         }
         else if (name.equals("Confusion in Line")){
-
+            //Choose a player. Randomly rearrange the line just before that player collects his or her next noble.
             curState.shuffleDeathRow();
             curState.addToMessage("Death Row was shuffled. ");
 
         }
         else if (name.equals("Double Feature")){
-
+            //Collect an additional noble from the front of the line this turn.
             if(curState.getCurrentPlayer()==1){
                curState.collectNoble(1);
 
@@ -1126,6 +1149,7 @@ public class ActionCard implements Serializable {
             curState.addToMessage("Player " + (curState.getCurrentPlayer()+1) + " gets two nobles! ");
         }
         else if (name.equals("Escape!")){
+            //Randomly choose two nobles in line and discard them. Randomly rearrange the remaining nobles in line.
             if(curState.deathRow.size()>2) {
                 int randChosenNob1 = (int) (Math.random() * (curState.deathRow.size()));
                 curState.nobleDiscard.add(curState.deathRow.get(randChosenNob1));
@@ -1141,7 +1165,7 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("Extra Cart")){
-
+            //Add 3 nobles from the noble deck to the end of the line.
             if(curState.deathRow.size()<=9){
                 for(int i =0;i<3;i++) {
                     curState.deathRow.add(curState.nobleDeck.get(0));
@@ -1165,6 +1189,7 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Fainting Spell")){
+            //Move a noble backward up to 3 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             int randIndex = (int)(Math.random()*(deathRow.size()-3));
             double randSpaces = Math.random();
@@ -1193,6 +1218,7 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Fled to England")){
+            //Discard any noble in line.
 
             int randEscapeNob = (int)(Math.random()*curState.deathRow.size());
             curState.nobleDiscard.add(curState.deathRow.get(randEscapeNob));
@@ -1201,6 +1227,7 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Forced Break")){
+            //All other players must discard an action card at random.
             if(curState.getNumPlayers()==2){
                 int rand1 = (int)(Math.random()*curState.humanPlayerHand.size());
 
@@ -1270,10 +1297,12 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Foreign Support")){
+            //Put this card in front of you.  Draw an action card whenever you collect a purple noble.
             curState.setHasForeignSupport(curState.getCurrentPlayer());
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " will receive one action card for each purple noble they collect. ");
         }
         else if (name.equals("Forward March")){
+            // Move a palace guard to the front of the line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for(int i = 0; i < deathRow.size(); i++) {
                 Noble card = deathRow.get(i);
@@ -1288,10 +1317,12 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Fountain of Blood")){
+            //Put this card in front of you. It is worth 2 points.
             curState.setHasFountainOfBlood(curState.getCurrentPlayer());
             curState.addToMessage((curState.getCurrentPlayer()+1) + " gets two bonus points.");
         }
         else if (name.equals("Friend of the Queen")){
+            //Move a noble backward up to 2 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             int randIndex = (int)(Math.random()*(deathRow.size()-2));
             Noble card = deathRow.get(randIndex);
@@ -1310,6 +1341,7 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Ignoble Noble")){
+            //Move a noble forward exactly 4 places in line.
 
                 ArrayList<Noble> deathRow = curState.getDeathRow();
             if(curState.deathRow.size()>4) {
@@ -1322,11 +1354,14 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Indifferent Public")){
+            //Put this card in front of you.  Any Gray nobles in your score pile are worth 1 point instead of their
+            //normal values.
             curState.setHasIndifferentPublic(curState.getCurrentPlayer());
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " will receive one point for each gray noble instead of its normal value. ");
 
         }
         else if (name.equals("Information Exchange")){
+            //Trade hands with another player.
             if (curState.getNumPlayers() == 2) {
                 ArrayList<ActionCard> curPlayerHand = curState.computerPlayer1Hand;
                 curState.computerPlayer1Hand = curState.humanPlayerHand;
@@ -1431,8 +1466,10 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("Lack of Faith")){
+            //If there are any blue nobles in line, move the one nearest the front of the line to the front
+            //of the line.
             for(int i = 0; i<curState.deathRow.size();i++){
-                if(curState.deathRow.get(i).getNobleColor() == "blue"){
+                if(curState.deathRow.get(i).getNobleColor().equals("blue")){
                     Noble card = curState.deathRow.get(i);
                     curState.deathRow.remove(i);
                     curState.deathRow.add(0,card);
@@ -1442,6 +1479,7 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("Late Arrival")){
+            //Look at the top 3 cards of the noble deck and add any one of them to the end of the line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             double random = Math.random();
             if(deathRow.size()>=3) {
@@ -1467,6 +1505,7 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Let Them Eat Cake")){
+            //If Marie Antoinette is in line, move her to the front of the line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for(int i = 1; i < deathRow.size(); i++)
             {
@@ -1482,6 +1521,7 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("L'Idiot")){
+            //Move a noble forward up to 2 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             if(deathRow.size()>2) {
                 int randIndex = 2 + ((int) (Math.random() * (deathRow.size() - 2)));
@@ -1499,9 +1539,10 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Majesty")){
+            //Move a purple noble forward up to 2 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for (int i = 2; i<deathRow.size();i++){
-                if(deathRow.get(i).getNobleColor() == "purple"){
+                if(deathRow.get(i).getNobleColor().equals("purple")){
                     Noble card = deathRow.get(i);
                     deathRow.remove(i);
                     if(rand<0.5){
@@ -1518,6 +1559,8 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("Mass Confusion")){
+            //Put all nobles in line in the noble deck.  Shuffle the noble
+            //deck and deal out the same number of nobles in a new line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             int numNobles = deathRow.size();
             ArrayList<Noble> currentNobleDeck = curState.getNobleDeck();
@@ -1533,9 +1576,10 @@ public class ActionCard implements Serializable {
             curState.addToMessage("All nobles in line were shuffled into the deck and Death Row was recreated. ");
         }
         else if (name.equals("Military Might")){
+            //Move a Red noble forward up to 2 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for (int i = 2; i<deathRow.size();i++){
-                if(deathRow.get(i).getNobleColor() == "red"){
+                if(deathRow.get(i).getNobleColor().equals("red")){
                     Noble card = deathRow.get(i);
                     deathRow.remove(i);
                     if(rand<0.5){
@@ -1552,11 +1596,13 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("Military Support")) {
+            //Put this card in front of you.  It is worth +1 point for each red noble in your score pile.
             curState.setHasMilitarySupport(curState.getCurrentPlayer());
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " will receive +1 for each red noble they collect. ");
 
         }
         else if (name.equals("Milling in Line")) {
+            //Randomly rearrange the first 5 nobles in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             ArrayList<Noble> firstFive = new ArrayList<Noble>();
 
@@ -1598,6 +1644,7 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Missed!")){
+            //Choose a player.  That player must place the last noble he or she collected at the end of the line.
             if (curState.getNumPlayers() == 2) {
                 Noble card = curState.getHumanPlayerNobles().get(curState.getHumanPlayerNobles().size()-1);
                 curState.humanPlayerNobles.remove(curState.getHumanPlayerNobles().size() - 1);
@@ -1701,38 +1748,47 @@ public class ActionCard implements Serializable {
                 }
             }
         }
-        //FIX THIS!!!! if zero noble cards
         else if (name.equals("Missing Heads")){
+            //Choose a player. That player loses a random noble from his or her score pile.
             if (curState.getNumPlayers() == 2) {
-                int cardNum = (int)(rand*curState.humanPlayerNobles.size());
-                Noble card = curState.humanPlayerNobles.get(cardNum);
-                curState.addToMessage("You lost "+ card.getNobleName() + ". ");
-                curState.humanPlayerNobles.remove(cardNum);
+                if(curState.humanPlayerNobles.size() != 0) {
+                    int cardNum = (int) (rand * curState.humanPlayerNobles.size());
+                    Noble card = curState.humanPlayerNobles.get(cardNum);
+                    curState.addToMessage("You lost " + card.getNobleName() + ". ");
+                    curState.humanPlayerNobles.remove(cardNum);
+                }
 
             }
             if (curState.getNumPlayers() == 3) {
                 if (curState.getCurrentPlayer() == 1) {
                     if (rand > .5){
-                        int cardNum = (int)(rand*curState.humanPlayerNobles.size());
-                        Noble card = curState.humanPlayerNobles.get(cardNum);
-                        curState.addToMessage("You lost "+ card.getNobleName() + ". ");
-                        curState.humanPlayerNobles.remove(cardNum);
+                        if (curState.humanPlayerNobles.size() != 0) {
+                            int cardNum = (int) (rand * curState.humanPlayerNobles.size());
+                            Noble card = curState.humanPlayerNobles.get(cardNum);
+                            curState.addToMessage("You lost " + card.getNobleName() + ". ");
+                            curState.humanPlayerNobles.remove(cardNum);
+                        }
                     }
                     else{
-                        int cardNum = (int)(rand*curState.computerPlayer2Nobles.size());
-                        Noble card = curState.computerPlayer2Nobles.get(cardNum);
-                        curState.addToMessage("Player 3 lost "+ card.getNobleName() + ". ");
-                        curState.computerPlayer2Nobles.remove(cardNum);
+                        if (curState.computerPlayer2Nobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.computerPlayer2Nobles.size());
+                            Noble card = curState.computerPlayer2Nobles.get(cardNum);
+                            curState.addToMessage("Player 3 lost " + card.getNobleName() + ". ");
+                            curState.computerPlayer2Nobles.remove(cardNum);
+                        }
                     }
                 }
                 else if (curState.getCurrentPlayer() == 2) {
 
                     if(rand>.5){
+
                         int cardNum = (int)(rand*curState.humanPlayerNobles.size());
                         if(cardNum>0) {
-                            Noble card = curState.humanPlayerNobles.get(cardNum);
-                            curState.addToMessage("You lost " + card.getNobleName() + ". ");
-                            curState.humanPlayerNobles.remove(cardNum);
+                            if (curState.humanPlayerNobles.size()!= 0) {
+                                Noble card = curState.humanPlayerNobles.get(cardNum);
+                                curState.addToMessage("You lost " + card.getNobleName() + ". ");
+                                curState.humanPlayerNobles.remove(cardNum);
+                            }
                         }
                     }
                     else{
@@ -1749,67 +1805,85 @@ public class ActionCard implements Serializable {
             if (curState.getNumPlayers() == 4) {
                 if (curState.getCurrentPlayer() == 1) {
                     if (rand < .33){
-                        int cardNum = (int)(rand*curState.humanPlayerNobles.size());
-                        Noble card = curState.humanPlayerNobles.get(cardNum);
-                        curState.addToMessage("You lost "+ card.getNobleName() + ". ");
-                        curState.humanPlayerNobles.remove(cardNum);
+                        if (curState.humanPlayerNobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.humanPlayerNobles.size());
+                            Noble card = curState.humanPlayerNobles.get(cardNum);
+                            curState.addToMessage("You lost " + card.getNobleName() + ". ");
+                            curState.humanPlayerNobles.remove(cardNum);
+                        }
 
                     }
                     else if(rand>.33 && rand<.66){
-                        int cardNum = (int)(rand*curState.computerPlayer2Nobles.size());
-                        Noble card = curState.computerPlayer2Nobles.get(cardNum);
-                        curState.addToMessage("Player 3 lost "+ card.getNobleName() + ". ");
-                        curState.computerPlayer2Nobles.remove(cardNum);
+                        if (curState.computerPlayer2Nobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.computerPlayer2Nobles.size());
+                            Noble card = curState.computerPlayer2Nobles.get(cardNum);
+                            curState.addToMessage("Player 3 lost " + card.getNobleName() + ". ");
+                            curState.computerPlayer2Nobles.remove(cardNum);
+                        }
                     }
                     else{
-                        int cardNum = (int)(rand*curState.computerPlayer3Nobles.size());
-                        Noble card = curState.computerPlayer3Nobles.get(cardNum);
-                        curState.addToMessage("Player 4 lost "+ card.getNobleName() + ". ");
-                        curState.computerPlayer3Nobles.remove(cardNum);
+                        if (curState.computerPlayer3Nobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.computerPlayer3Nobles.size());
+                            Noble card = curState.computerPlayer3Nobles.get(cardNum);
+                            curState.addToMessage("Player 4 lost " + card.getNobleName() + ". ");
+                            curState.computerPlayer3Nobles.remove(cardNum);
+                        }
                     }
                 } else if (curState.getCurrentPlayer() == 2) {
                     if (rand < .33){
-                        int cardNum = (int)(rand*curState.humanPlayerNobles.size());
-                        Noble card = curState.humanPlayerNobles.get(cardNum);
-                        curState.addToMessage("You lost "+ card.getNobleName() + ". ");
-                        curState.humanPlayerNobles.remove(cardNum);
-
+                        if (curState.humanPlayerNobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.humanPlayerNobles.size());
+                            Noble card = curState.humanPlayerNobles.get(cardNum);
+                            curState.addToMessage("You lost " + card.getNobleName() + ". ");
+                            curState.humanPlayerNobles.remove(cardNum);
+                        }
                     }
                     else if(rand>.33 && rand<.66){
-                        int cardNum = (int)(rand*curState.computerPlayer1Nobles.size());
-                        Noble card = curState.computerPlayer1Nobles.get(cardNum);
-                        curState.addToMessage("Player 2 lost "+ card.getNobleName() + ". ");
-                        curState.computerPlayer1Nobles.remove(cardNum);
+                        if (curState.computerPlayer1Nobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.computerPlayer1Nobles.size());
+                            Noble card = curState.computerPlayer1Nobles.get(cardNum);
+                            curState.addToMessage("Player 2 lost " + card.getNobleName() + ". ");
+                            curState.computerPlayer1Nobles.remove(cardNum);
+                        }
                     }
                     else{
-                        int cardNum = (int)(rand*curState.computerPlayer3Nobles.size());
-                        Noble card = curState.computerPlayer3Nobles.get(cardNum);
-                        curState.addToMessage("Player 4 lost "+ card.getNobleName() + ". ");
-                        curState.computerPlayer3Nobles.remove(cardNum);
+                        if (curState.computerPlayer3Nobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.computerPlayer3Nobles.size());
+                            Noble card = curState.computerPlayer3Nobles.get(cardNum);
+                            curState.addToMessage("Player 4 lost " + card.getNobleName() + ". ");
+                            curState.computerPlayer3Nobles.remove(cardNum);
+                        }
                     }
 
                 } else if(curState.getCurrentPlayer()==3){
                     if (rand < .33){
-                        int cardNum = (int) (rand * curState.humanPlayerNobles.size());
-                        Noble card = curState.humanPlayerNobles.get(cardNum);
-                        curState.addToMessage("You lost "+ card.getNobleName() + ". ");
-                        curState.humanPlayerNobles.remove(cardNum);
+                        if (curState.humanPlayerNobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.humanPlayerNobles.size());
+                            Noble card = curState.humanPlayerNobles.get(cardNum);
+                            curState.addToMessage("You lost " + card.getNobleName() + ". ");
+                            curState.humanPlayerNobles.remove(cardNum);
+                        }
                     } else if(rand>.33 && rand<.66){
-                        int cardNum = (int)(rand*curState.computerPlayer1Nobles.size());
-                        Noble card = curState.computerPlayer1Nobles.get(cardNum);
-                        curState.addToMessage("Player 2 lost "+ card.getNobleName() + ". ");
-                        curState.computerPlayer1Nobles.remove(cardNum);
+                        if (curState.computerPlayer1Nobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.computerPlayer1Nobles.size());
+                            Noble card = curState.computerPlayer1Nobles.get(cardNum);
+                            curState.addToMessage("Player 2 lost " + card.getNobleName() + ". ");
+                            curState.computerPlayer1Nobles.remove(cardNum);
+                        }
                     } else {
-                        int cardNum = (int) (rand * curState.computerPlayer2Nobles.size());
-                        Noble card = curState.computerPlayer2Nobles.get(cardNum);
-                        curState.addToMessage("Player 3 lost "+ card.getNobleName() + ". ");
-                        curState.computerPlayer2Nobles.remove(cardNum);
+                        if (curState.computerPlayer2Nobles.size()!= 0) {
+                            int cardNum = (int) (rand * curState.computerPlayer2Nobles.size());
+                            Noble card = curState.computerPlayer2Nobles.get(cardNum);
+                            curState.addToMessage("Player 3 lost " + card.getNobleName() + ". ");
+                            curState.computerPlayer2Nobles.remove(cardNum);
+                        }
                     }
 
                 }
             }
         }
         else if (name.equals("Opinionated Guards")){
+            //Rearrange the first 4 nobles in line any way you wish
             ArrayList<Noble> deathRow = curState.getDeathRow();
             ArrayList<Noble> firstFour = new ArrayList<Noble>();
 
@@ -1848,6 +1922,7 @@ public class ActionCard implements Serializable {
 
         }
         else if (name.equals("Political Influence")){
+            //Draw 3 additional action cards at the end of your turn.  Do not collect a noble this turn.
             curState.drawActionCard(curState.getCurrentPlayer());
             curState.drawActionCard(curState.getCurrentPlayer());
             curState.drawActionCard(curState.getCurrentPlayer());
@@ -1855,6 +1930,7 @@ public class ActionCard implements Serializable {
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " collected three action cards and no noble. ");
         }
         else if (name.equals("Public Demand")){
+            //Move any noble in line to the front of the line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             int randIndex = (int)(Math.random()*(deathRow.size()));
             Noble card = deathRow.get(randIndex);
@@ -1864,6 +1940,7 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Pushed")){
+            //Move a noble forward exactly 2 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             if(deathRow.size()>2) {
                 int randIndex = 2 + ((int) (Math.random() * (deathRow.size() - 2)));
@@ -1875,6 +1952,7 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Rain Delay")){
+            //Shuffle all players' hands into the action deck and deal out 5 new action cards to each player.
             if(curState.getNumPlayers()==2)
             {
                 curState.getHumanPlayerHand().clear();
@@ -1899,11 +1977,13 @@ public class ActionCard implements Serializable {
             curState.addToMessage("All players' hands were shuffled into the deck and each player was dealt five new action cards. ");
         }
         else if (name.equals("Scarlet Pimpernel")){
+            //The day ends after you finish your turn.  Discard any nobles remaining in line.
             Noble card = curState.getDeathRow().get(0);
             curState.deathRow.clear();
             curState.deathRow.add(card);
         }
         else if (name.equals("Stumble")){
+            //Move a noble forward exactly 1 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             if(deathRow.size()>1) {
                 int randIndex = 1 + ((int) (Math.random() * (deathRow.size() - 1)));
@@ -1914,6 +1994,7 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("The Long Walk")){
+            //Reverse the order of the line.
             ArrayList<Noble> curDeathRow = curState.getDeathRow();
             ArrayList<Noble> newDeathRow = new ArrayList<Noble>();
             int curDeathRowSize = curDeathRow.size();
@@ -1924,6 +2005,7 @@ public class ActionCard implements Serializable {
             curState.addToMessage("The order of the line was reversed. ");
         }
         else if (name.equals("'Tis a Far Better Thing")){
+            //Move a noble forward exactly 3 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             if(deathRow.size()>3) {
                 int randIndex = 3 + ((int) (Math.random() * (deathRow.size() - 3)));
@@ -1935,6 +2017,7 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Tough Crowd")){
+            //Put this card in front of another player.  It is worth -2 points to that player.
             if (curState.getNumPlayers() == 2) {
                 curState.setHasToughCrowd(0);
                 curState.addToMessage("You received -2 points. ");
@@ -2009,6 +2092,7 @@ public class ActionCard implements Serializable {
             }
         }
         else if (name.equals("Trip")){
+            //Move a noble backward exactly 1 place in line. You may play another action card this turn.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             int randIndex = (int)(Math.random()*(deathRow.size()-1));
             Noble card = deathRow.get(randIndex);
@@ -2019,6 +2103,7 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(deathRow);
         }
         else if (name.equals("Was That My Name?")){
+            //Move a noble forward up to 3 places in line.
             ArrayList<Noble> deathRow = curState.getDeathRow();
             if(deathRow.size()>3) {
                 int randIndex = 3 + (int) (Math.random() * (deathRow.size() - 3));
@@ -2047,6 +2132,7 @@ public class ActionCard implements Serializable {
         return curState;
     }
     public GuillotineState hardAIAction(GuillotineState curState) {
+        //Put the noble at the front of the line into another player's score pile.
         // make if statements for every action card
         double rand = Math.random();
 
@@ -2105,20 +2191,22 @@ public class ActionCard implements Serializable {
                 }
             }
         } else if (name.equals("Bribed Guards")) {
-
+            //Move the noble at the front of the line to the end of the line.
             Noble firstNob = curState.deathRow.get(0);
             curState.addToMessage(firstNob.getNobleName() + " was moved to the end of the line. ");
             curState.removeFromDeathRow(0);
             curState.deathRow.add(firstNob);
 
         } else if (name.equals("Church Support")) {
+            //Put this card in front of you. It is worth +1 for each Blue noble in your score pile
+            //Scoring is implemented in the calculateScore method of game state
             curState.setHasChurchSupport(curState.getCurrentPlayer());
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " will receive +1 for each blue noble they collect. ");
 
         } else if (name.equals("Civic Pride")) {
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for (int i = 2; i < deathRow.size(); i++) {
-                if (deathRow.get(i).getNobleColor() == "green") {
+                if (deathRow.get(i).getNobleColor().equals("green")) {
                     Noble card = deathRow.get(i);
                     deathRow.remove(i);
                     if (rand < 0.5) {
@@ -2432,7 +2520,7 @@ public class ActionCard implements Serializable {
             }
         } else if (name.equals("Lack of Faith")) {
             for (int i = 0; i < curState.deathRow.size(); i++) {
-                if (curState.deathRow.get(i).getNobleColor() == "blue") {
+                if (curState.deathRow.get(i).getNobleColor().equals("blue")) {
                     Noble card = curState.deathRow.get(i);
                     curState.deathRow.remove(i);
                     curState.deathRow.add(0, card);
@@ -2495,7 +2583,7 @@ public class ActionCard implements Serializable {
         } else if (name.equals("Majesty")) {
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for (int i = 2; i < deathRow.size(); i++) {
-                if (deathRow.get(i).getNobleColor() == "purple") {
+                if (deathRow.get(i).getNobleColor().equals("purple")) {
                     Noble card = deathRow.get(i);
                     deathRow.remove(i);
                     if (rand < 0.5) {
@@ -2526,7 +2614,7 @@ public class ActionCard implements Serializable {
         } else if (name.equals("Military Might")) {
             ArrayList<Noble> deathRow = curState.getDeathRow();
             for (int i = 2; i < deathRow.size(); i++) {
-                if (deathRow.get(i).getNobleColor() == "red") {
+                if (deathRow.get(i).getNobleColor().equals("red")) {
                     Noble card = deathRow.get(i);
                     deathRow.remove(i);
                     if (rand < 0.5) {

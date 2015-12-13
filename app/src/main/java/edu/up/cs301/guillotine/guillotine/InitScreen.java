@@ -48,6 +48,7 @@ public class InitScreen extends AppCompatActivity implements RadioGroup.OnChecke
     RadioGroup opponents;
     RadioGroup levels;
 
+    //instance variables
     int numCompPlayers;
     int difficulty;
 
@@ -67,8 +68,9 @@ public class InitScreen extends AppCompatActivity implements RadioGroup.OnChecke
         start = (Button) findViewById(R.id.start);
         rules = (Button) findViewById(R.id.rulesButton1);
 
-        difficulty=0;
-        numCompPlayers=1;
+        //initialize # opponents and level
+        difficulty = 0;
+        numCompPlayers = 1;
 
         //radio buttons
         oneOpp = (RadioButton) findViewById(R.id.oneOpp);
@@ -83,6 +85,7 @@ public class InitScreen extends AppCompatActivity implements RadioGroup.OnChecke
         levels = (RadioGroup) findViewById(R.id.levels);
         levels.setOnCheckedChangeListener(this);
 
+        //lock landscape orientation
         lockOrientationLandscape(InitScreen.this);
     }
     public static void lockOrientationLandscape(Activity activity) {
@@ -133,7 +136,7 @@ public class InitScreen extends AppCompatActivity implements RadioGroup.OnChecke
         startActivity(new Intent(InitScreen.this, RulesScreen.class));
     }
 
-    //onCheckChanged: Listens to which radio button has been selected
+    //onCheckChanged: Listens to which radio button has been selected and sets # opponents and level
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId)
     {
@@ -166,6 +169,5 @@ public class InitScreen extends AppCompatActivity implements RadioGroup.OnChecke
                 difficulty = 1;
             }
         }
-
     }
 }

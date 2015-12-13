@@ -502,6 +502,7 @@ public class GuillotineState implements Serializable {
 		return gameOver;
 	}
 
+	//more getters and setters
 	public int getHumanPlayerScore(){
 		return humanPlayerScore;
 	}
@@ -546,6 +547,9 @@ public class GuillotineState implements Serializable {
 	}
 	public void setHasToughCrowd(int player) { hasToughCrowd = player; }
 
+	/*
+	 * This method calculates all the scores for each player, based on all criteria for scoring.
+	 */
 	public void calculateScores() {
 		int currentScore = 0;
 		int numGuards = 0;
@@ -737,15 +741,7 @@ public class GuillotineState implements Serializable {
 		}
 
 	}
-	public void addNobleCardCompPlayer1(int addScore){
-		computerPlayer1Score+=addScore;
-	}
-	public void addNobleCardCompPlayer2(int addScore){
-		computerPlayer2Score+=addScore;
-	}
-	public void addNobleCardCompPlayer3(int addScore){
-		computerPlayer3Score+=addScore;
-	}
+	//A variety of getters and setters for variables in here.
 	public void addToMessage(String addition){
 		message = message + " " + addition;
 	}

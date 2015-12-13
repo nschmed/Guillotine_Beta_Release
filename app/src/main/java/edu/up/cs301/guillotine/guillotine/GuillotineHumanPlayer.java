@@ -6,7 +6,7 @@ import android.view.View.OnClickListener;
 import edu.up.cs301.guillotine.R;
 
 /**
- * This class describes what a human player can do/how it works
+ * This class describes what a human player can do/how it works, is not currently implemented
  *
  * @author Muhammed Acar
  * @author Linnea Bair
