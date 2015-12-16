@@ -2204,21 +2204,35 @@ public class ActionCard implements Serializable {
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " will receive +1 for each blue noble they collect. ");
 
         } else if (name.equals("Civic Pride")) {
+            Integer currentN = 10;
+            Integer currentI = null;
             ArrayList<Noble> deathRow = curState.getDeathRow();
-            for (int i = 2; i < deathRow.size(); i++) {
-                if (deathRow.get(i).getNobleColor().equals("green")) {
-                    Noble card = deathRow.get(i);
-                    deathRow.remove(i);
-                    if (rand < 0.5) {
-                        deathRow.add(i - 1, card);
-                        curState.addToMessage(card.getNobleName() + " was moved forward one place. ");
-                    } else {
-                        deathRow.add(i - 2, card);
-                        curState.addToMessage(card.getNobleName() + " was moved forward two places. ");
+            Noble currentNoble = null;
+            boolean firstNoble = true;
+            loop:
+            {
+                for (int i = 1; i < curState.getDeathRow().size(); i++) {
+                    if (curState.getDeathRow().get(i).getNobleColor().equals("purple")) {
+                        if (firstNoble) {
+                            currentN = curState.getDeathRow().get(i).getNoblePoints();
+                            currentNoble = curState.getDeathRow().get(i);
+                            firstNoble = false;
+                        }
+                    } else if (currentN < curState.getDeathRow().get(i).getNoblePoints()) {
+                        currentN = curState.getDeathRow().get(i).getNoblePoints();
+                        currentNoble = curState.getDeathRow().get(i);
+                        currentI = i;
                     }
-                    curState.setDeathRow(deathRow);
-                    break;
                 }
+            }
+            if (currentI != null && currentNoble != null) {
+                deathRow.remove(currentI);
+                deathRow.add(0, currentNoble);
+                curState.addToMessage(currentNoble.getNobleName() + " was moved to the front of the line. ");
+                curState.setDeathRow(deathRow);
+
+            } else {
+                curState.setCompleted(false);
             }
 
         } else if (name.equals("Civic Support")) {
@@ -2285,27 +2299,7 @@ public class ActionCard implements Serializable {
             }
 
         } else if (name.equals("Fainting Spell")) {
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            int randIndex = (int) (Math.random() * (deathRow.size() - 3));
-            double randSpaces = Math.random();
-            String nobleName;
-            if (randSpaces >= .33) {
-                nobleName = deathRow.get(randIndex).getNobleName();
-                deathRow.add((randIndex + 1), deathRow.get(randIndex));
-                deathRow.remove(randIndex);
-                curState.addToMessage(nobleName + " was moved backward one space. ");
-            } else if (randSpaces > .33 && randSpaces < .67) {
-                nobleName = deathRow.get(randIndex).getNobleName();
-                deathRow.add((randIndex + 2), deathRow.get(randIndex));
-                deathRow.remove(randIndex);
-                curState.addToMessage(nobleName + " was moved backward two spaces. ");
-            } else if (randSpaces >= .67) {
-                nobleName = deathRow.get(randIndex).getNobleName();
-                deathRow.add((randIndex + 3), deathRow.get(randIndex));
-                deathRow.remove(randIndex);
-                curState.addToMessage(nobleName + " was moved backward three spaces. ");
-            }
-            curState.setDeathRow(deathRow);
+            hardUpToMove(curState, -3);
         } else if (name.equals("Fled to England")) {
 
             int randEscapeNob = (int) (Math.random() * curState.deathRow.size());
@@ -2396,127 +2390,27 @@ public class ActionCard implements Serializable {
             curState.setHasFountainOfBlood(curState.getCurrentPlayer());
             curState.addToMessage((curState.getCurrentPlayer() + 1) + " gets two bonus points.");
         } else if (name.equals("Friend of the Queen")) {
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            int randIndex = (int) (Math.random() * (deathRow.size() - 2));
-            Noble card = deathRow.get(randIndex);
-            double randSpaces = Math.random();
-            deathRow.remove(randIndex);
-            if (randSpaces >= .5) {
-                deathRow.add((randIndex + 1), card);
-                curState.addToMessage(card.getNobleName() + "was moved backward one space. ");
-            } else if (randSpaces < .5) {
-                deathRow.add((randIndex + 2), card);
-                curState.addToMessage(card.getNobleName() + "was moved backward two spaces. ");
-            }
-            curState.setDeathRow(deathRow);
+            hardUpToMove(curState, -2);
         } else if (name.equals("Ignoble Noble")) {
-
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            if (curState.deathRow.size() > 4) {
-                int randIndex = 4 + (int) (Math.random() * (deathRow.size() - 4));
-                Noble card = deathRow.get(randIndex);
-                deathRow.remove(randIndex);
-                deathRow.add((randIndex - 4), card);
-                curState.addToMessage(card.getNobleName() + "was moved forward four spaces. ");
-            }
-            curState.setDeathRow(deathRow);
+            hardExactMove(curState, 4);
         } else if (name.equals("Indifferent Public")) {
             curState.setHasIndifferentPublic(curState.getCurrentPlayer());
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " will receive one point for each gray noble instead of its normal value. ");
 
         } else if (name.equals("Information Exchange")) {
-            if (curState.getNumPlayers() == 2) {
-                ArrayList<ActionCard> curPlayerHand = curState.computerPlayer1Hand;
+            ArrayList<ActionCard> curPlayerHand;
+            if (curState.getCurrentPlayer() == 2) {
+                curPlayerHand = curState.computerPlayer1Hand;
                 curState.computerPlayer1Hand = curState.humanPlayerHand;
                 curState.humanPlayerHand = curPlayerHand;
-                curState.addToMessage("Player 2 switched hands with you. ");
-            }
-            if (curState.getNumPlayers() == 3) {
-                if (curState.getCurrentPlayer() == 1) {
-                    if (rand > .5) {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer1Hand;
-                        curState.computerPlayer1Hand = curState.humanPlayerHand;
-                        curState.humanPlayerHand = curPlayerHand;
-                        curState.addToMessage("Player 2 switched hands with you. ");
-                    } else {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer2Hand;
-                        curState.computerPlayer2Hand = curState.computerPlayer1Hand;
-                        curState.computerPlayer1Hand = curPlayerHand;
-                        curState.addToMessage("Player 2 switched hands with Player 3. ");
-                    }
-                } else if (curState.getCurrentPlayer() == 2) {
-
-                    if (rand > .5) {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer2Hand;
-                        curState.computerPlayer2Hand = curState.humanPlayerHand;
-                        curState.humanPlayerHand = curPlayerHand;
-                        curState.addToMessage("Player 3 switched hands with you. ");
-                    } else {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer2Hand;
-                        curState.computerPlayer2Hand = curState.computerPlayer1Hand;
-                        curState.computerPlayer1Hand = curPlayerHand;
-                        curState.addToMessage("Player 2 switched hands with Player 3. ");
-                    }
-
-                }
-            }
-            if (curState.getNumPlayers() == 4) {
-                if (curState.getCurrentPlayer() == 1) {
-                    if (rand < .33) {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer1Hand;
-                        curState.computerPlayer1Hand = curState.humanPlayerHand;
-                        curState.humanPlayerHand = curPlayerHand;
-                        curState.addToMessage("Player 2 switched hands with you. ");
-                    } else if (rand > .33 && rand < .66) {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer2Hand;
-                        curState.computerPlayer2Hand = curState.computerPlayer1Hand;
-                        curState.computerPlayer1Hand = curPlayerHand;
-                        curState.addToMessage("Player 2 switched hands with Player 3. ");
-                    } else {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer3Hand;
-                        curState.computerPlayer3Hand = curState.computerPlayer1Hand;
-                        curState.computerPlayer1Hand = curPlayerHand;
-                        curState.addToMessage("Player 2 switched hands with Player 4. ");
-                    }
-                } else if (curState.getCurrentPlayer() == 2) {
-                    if (rand < .33) {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer2Hand;
-                        curState.computerPlayer2Hand = curState.humanPlayerHand;
-                        curState.humanPlayerHand = curPlayerHand;
-                        curState.addToMessage("Player 3 switched hands with you. ");
-
-                    } else if (rand > .33 && rand < .66) {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer2Hand;
-                        curState.computerPlayer2Hand = curState.computerPlayer1Hand;
-                        curState.computerPlayer1Hand = curPlayerHand;
-                        curState.addToMessage("Player 2 switched hands with Player 3. ");
-                    } else {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer3Hand;
-                        curState.computerPlayer3Hand = curState.computerPlayer2Hand;
-                        curState.computerPlayer2Hand = curPlayerHand;
-                        curState.addToMessage("Player 3 switched hands with Player 4. ");
-                    }
-
-                } else if (curState.getCurrentPlayer() == 3) {
-                    if (rand < .33) {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer3Hand;
-                        curState.computerPlayer3Hand = curState.humanPlayerHand;
-                        curState.humanPlayerHand = curPlayerHand;
-                        curState.addToMessage("Player 4 switched hands with you. ");
-
-                    } else if (rand > .33 && rand < .66) {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer3Hand;
-                        curState.computerPlayer3Hand = curState.computerPlayer1Hand;
-                        curState.computerPlayer1Hand = curPlayerHand;
-                        curState.addToMessage("Player 2 switched hands with Player 4. ");
-                    } else {
-                        ArrayList<ActionCard> curPlayerHand = curState.computerPlayer3Hand;
-                        curState.computerPlayer3Hand = curState.computerPlayer2Hand;
-                        curState.computerPlayer2Hand = curPlayerHand;
-                        curState.addToMessage("Player 3 switched hands with Player 4. ");
-                    }
-
-                }
+            } else if (curState.getCurrentPlayer() == 3) {
+                curPlayerHand = curState.computerPlayer1Hand;
+                curState.computerPlayer2Hand = curState.humanPlayerHand;
+                curState.humanPlayerHand = curPlayerHand;
+            } else if (curState.getCurrentPlayer() == 4) {
+                curPlayerHand = curState.computerPlayer1Hand;
+                curState.computerPlayer3Hand = curState.humanPlayerHand;
+                curState.humanPlayerHand = curPlayerHand;
             }
         } else if (name.equals("Lack of Faith")) {
             for (int i = 0; i < curState.deathRow.size(); i++) {
@@ -2526,6 +2420,8 @@ public class ActionCard implements Serializable {
                     curState.deathRow.add(0, card);
                     curState.addToMessage(card.getNobleName() + " was moved to the front of the line. ");
                     break;
+                } else {
+                    curState.setCompleted(false);
                 }
             }
         } else if (name.equals("Late Arrival")) {
@@ -2565,70 +2461,113 @@ public class ActionCard implements Serializable {
             }
             curState.setDeathRow(deathRow);
         } else if (name.equals("L'Idiot")) {
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            if (deathRow.size() > 2) {
-                int randIndex = 2 + ((int) (Math.random() * (deathRow.size() - 2)));
-                Noble card = deathRow.get(randIndex);
-                double randSpaces = Math.random();
-                deathRow.remove(randIndex);
-                if (randSpaces >= .5) {
-                    deathRow.add((randIndex - 1), card);
-                    curState.addToMessage(card.getNobleName() + " was moved forward one space. ");
-                } else if (randSpaces < .5) {
-                    deathRow.add((randIndex - 2), card);
-                    curState.addToMessage(card.getNobleName() + " was moved forward two spaces. ");
-                }
-            }
-            curState.setDeathRow(deathRow);
+            hardUpToMove(curState, 2);
         } else if (name.equals("Majesty")) {
+            boolean done = false;
+            Integer currentN = 10;
+            Integer currentI = null;
             ArrayList<Noble> deathRow = curState.getDeathRow();
-            for (int i = 2; i < deathRow.size(); i++) {
-                if (deathRow.get(i).getNobleColor().equals("purple")) {
-                    Noble card = deathRow.get(i);
-                    deathRow.remove(i);
-                    if (rand < 0.5) {
-                        deathRow.add(i - 1, card);
-                        curState.addToMessage(card.getNobleName() + " was moved forward one place. ");
-                    } else {
-                        deathRow.add(i - 2, card);
-                        curState.addToMessage(card.getNobleName() + " was moved forward two places. ");
+            Noble currentNoble = null;
+            boolean firstNoble = true;
+            loop:
+            {
+                for (int i = 1; i < curState.getDeathRow().size(); i++) {
+                    if (curState.getDeathRow().get(i).getNobleColor().equals("purple")) {
+                        if (firstNoble) {
+                            currentN = curState.getDeathRow().get(i).getNoblePoints();
+                            currentNoble = curState.getDeathRow().get(i);
+                            firstNoble = false;
+                        } else if (curState.getDeathRow().get(i).getNobleName().equals("Count") || curState.getDeathRow().get(i).getNobleName().equals("Countess") && hasCountOrCountess(curState) == true) {
+                            currentNoble = curState.getDeathRow().get(i);
+                            deathRow.remove(i);
+                            deathRow.add(0, currentNoble);
+                            curState.addToMessage(currentNoble.getNobleName() + " was moved to the front of the line. ");
+                            curState.setDeathRow(deathRow);
+                            done = true;
+                            break loop;
+                        } else if (currentN < curState.getDeathRow().get(i).getNoblePoints()) {
+                            currentN = curState.getDeathRow().get(i).getNoblePoints();
+                            currentNoble = curState.getDeathRow().get(i);
+                            currentI = i;
+                        }
                     }
-                    curState.setDeathRow(deathRow);
-                    break;
                 }
             }
-        } else if (name.equals("Mass Confusion")) {
+            if (done == false && currentI != null && currentNoble != null) {
+                deathRow.remove(currentI);
+                deathRow.add(0, currentNoble);
+                curState.addToMessage(currentNoble.getNobleName() + " was moved to the front of the line. ");
+                curState.setDeathRow(deathRow);
+
+            } else {
+                curState.setCompleted(false);
+            }
+
+        }
+        else if (name.equals("Mass Confusion"))
+
+        {
             ArrayList<Noble> deathRow = curState.getDeathRow();
             int numNobles = deathRow.size();
             ArrayList<Noble> currentNobleDeck = curState.getNobleDeck();
 
             for (int i = 0; i < deathRow.size(); i++) {
-                Noble card = deathRow.get(0);
-                deathRow.remove(0);
+                Noble card = deathRow.get(i);
+                deathRow.remove(i);
                 currentNobleDeck.add(card);
             }
             curState.setNobleDeck(currentNobleDeck);
             curState.shuffleNobleDeck();
             curState.createDeathRow(numNobles);
-            curState.addToMessage("All nobles in line were shuffled into the deck and Death Row was recreated. ");
-        } else if (name.equals("Military Might")) {
+        }
+        else if (name.equals("Military Might"))
+
+        {
+            Integer currentN = 10;
+            Integer currentI = null;
+            boolean done = false;
             ArrayList<Noble> deathRow = curState.getDeathRow();
-            for (int i = 2; i < deathRow.size(); i++) {
-                if (deathRow.get(i).getNobleColor().equals("red")) {
-                    Noble card = deathRow.get(i);
-                    deathRow.remove(i);
-                    if (rand < 0.5) {
-                        deathRow.add(i - 1, card);
-                        curState.addToMessage(card.getNobleName() + " was moved forward one place. ");
-                    } else {
-                        deathRow.add(i - 2, card);
-                        curState.addToMessage(card.getNobleName() + " was moved forward two places. ");
+            Noble currentNoble = null;
+            boolean firstNoble = true;
+            loop:
+            {
+                for (int i = 1; i < curState.getDeathRow().size(); i++) {
+                    if (curState.getDeathRow().get(i).getNobleColor().equals("purple")) {
+                        if (firstNoble) {
+                            currentN = curState.getDeathRow().get(i).getNoblePoints();
+                            currentNoble = curState.getDeathRow().get(i);
+                            firstNoble = false;
+                        } else if (curState.getDeathRow().get(i).getNobleName().equals("Palace Guard")) {
+                            currentNoble = curState.getDeathRow().get(i);
+                            deathRow.remove(i);
+                            deathRow.add(0, currentNoble);
+                            curState.addToMessage(currentNoble.getNobleName() + " was moved to the front of the line. ");
+                            curState.setDeathRow(deathRow);
+                            done = true;
+                            break loop;
+                        } else if (currentN < curState.getDeathRow().get(i).getNoblePoints()) {
+                            currentN = curState.getDeathRow().get(i).getNoblePoints();
+                            currentNoble = curState.getDeathRow().get(i);
+                            currentI = i;
+
+                        }
                     }
-                    curState.setDeathRow(deathRow);
-                    break;
+
                 }
             }
-        } else if (name.equals("Military Support")) {
+            if (done == false && currentI != null && currentNoble != null) {
+                deathRow.remove(currentI);
+                deathRow.add(0, currentNoble);
+                curState.addToMessage(currentNoble.getNobleName() + " was moved to the front of the line. ");
+                curState.setDeathRow(deathRow);
+
+            } else {
+                curState.setCompleted(false);
+            }
+
+
+        }
+        else if (name.equals("Military Support")) {
             curState.setHasMilitarySupport(curState.getCurrentPlayer());
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " will receive +1 for each red noble they collect. ");
 
@@ -2673,201 +2612,27 @@ public class ActionCard implements Serializable {
             curState.addToMessage("The first five nobles in line were rearranged. ");
             curState.setDeathRow(deathRow);
         } else if (name.equals("Missed!")) {
-            if (curState.getNumPlayers() == 2) {
+            if (curState.getHumanPlayerNobles().size() != 0) {
                 Noble card = curState.getHumanPlayerNobles().get(curState.getHumanPlayerNobles().size() - 1);
                 curState.humanPlayerNobles.remove(curState.getHumanPlayerNobles().size() - 1);
                 curState.deathRow.add(card);
-                curState.addToMessage(card.getNobleName() + " was moved from your hand to death row. ");
-
+                //curState.addToMessage(card.getNobleName() + " was moved from your hand to death row. ");
+            } else {
+                curState.setCompleted(false);
             }
-            if (curState.getNumPlayers() == 3) {
-                if (curState.getCurrentPlayer() == 1) {
-                    if (rand > .5) {
-                        Noble card = curState.getHumanPlayerNobles().get(curState.getHumanPlayerNobles().size() - 1);
-                        curState.humanPlayerNobles.remove(curState.getHumanPlayerNobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from your hand to death row. ");
-                    } else {
-                        Noble card = curState.getComputerPlayer2Nobles().get(curState.getComputerPlayer2Nobles().size() - 1);
-                        curState.computerPlayer2Nobles.remove(curState.getComputerPlayer2Nobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from Player 3's hand to death row. ");
-                    }
-                } else if (curState.getCurrentPlayer() == 2) {
 
-                    if (rand > .5) {
-                        Noble card = curState.getHumanPlayerNobles().get(curState.getHumanPlayerNobles().size() - 1);
-                        curState.humanPlayerNobles.remove(curState.getHumanPlayerNobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from your hand to death row. ");
-                    } else {
-                        Noble card = curState.getComputerPlayer1Nobles().get(curState.getComputerPlayer1Nobles().size() - 1);
-                        curState.computerPlayer1Nobles.remove(curState.getComputerPlayer1Nobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from Player 2's hand to death row. ");
-                    }
-
-                }
-            }
-            if (curState.getNumPlayers() == 4) {
-                if (curState.getCurrentPlayer() == 1) {
-                    if (rand < .33) {
-                        Noble card = curState.getHumanPlayerNobles().get(curState.getHumanPlayerNobles().size() - 1);
-                        curState.humanPlayerNobles.remove(curState.getHumanPlayerNobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from your hand to death row. ");
-
-                    } else if (rand > .33 && rand < .66) {
-                        Noble card = curState.getComputerPlayer2Nobles().get(curState.getComputerPlayer2Nobles().size() - 1);
-                        curState.computerPlayer2Nobles.remove(curState.getComputerPlayer2Nobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from Player 3's hand to death row. ");
-                    } else {
-                        Noble card = curState.getComputerPlayer3Nobles().get(curState.getComputerPlayer3Nobles().size() - 1);
-                        curState.computerPlayer3Nobles.remove(curState.getComputerPlayer3Nobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from Player 4's hand to death row. ");
-                    }
-                } else if (curState.getCurrentPlayer() == 2) {
-                    if (rand < .33) {
-                        Noble card = curState.getHumanPlayerNobles().get(curState.getHumanPlayerNobles().size() - 1);
-                        curState.humanPlayerNobles.remove(curState.getHumanPlayerNobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from your hand to death row. ");
-
-                    } else if (rand > .33 && rand < .66) {
-                        Noble card = curState.getComputerPlayer1Nobles().get(curState.getComputerPlayer1Nobles().size() - 1);
-                        curState.computerPlayer1Nobles.remove(curState.getComputerPlayer1Nobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from Player 2's hand to death row. ");
-                    } else {
-                        Noble card = curState.getComputerPlayer3Nobles().get(curState.getComputerPlayer3Nobles().size() - 1);
-                        curState.computerPlayer3Nobles.remove(curState.getComputerPlayer3Nobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from Player 4's hand to death row. ");
-                    }
-
-                } else if (curState.getCurrentPlayer() == 3) {
-                    if (rand < .33) {
-                        Noble card = curState.getHumanPlayerNobles().get(curState.getHumanPlayerNobles().size() - 1);
-                        curState.humanPlayerNobles.remove(curState.getHumanPlayerNobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from your hand to death row. ");
-
-                    } else if (rand > .33 && rand < .66) {
-                        Noble card = curState.getComputerPlayer1Nobles().get(curState.getComputerPlayer1Nobles().size() - 1);
-                        curState.computerPlayer1Nobles.remove(curState.getComputerPlayer1Nobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from Player 2's hand to death row. ");
-                    } else {
-                        Noble card = curState.getComputerPlayer2Nobles().get(curState.getComputerPlayer2Nobles().size() - 1);
-                        curState.computerPlayer2Nobles.remove(curState.getComputerPlayer2Nobles().size() - 1);
-                        curState.deathRow.add(card);
-                        curState.addToMessage(card.getNobleName() + " was moved from Player 3's hand to death row. ");
-                    }
-
-                }
-            }
         }
         //FIX THIS!!!! if zero noble cards
         else if (name.equals("Missing Heads")) {
-            if (curState.getNumPlayers() == 2) {
+            if (curState.getHumanPlayerNobles().size() != 0) {
                 int cardNum = (int) (rand * curState.humanPlayerNobles.size());
                 Noble card = curState.humanPlayerNobles.get(cardNum);
-                curState.addToMessage("You lost " + card.getNobleName() + ". ");
+                //curState.addToMessage("You lost " + card.getNobleName() + ". ");
                 curState.humanPlayerNobles.remove(cardNum);
-
             }
-            if (curState.getNumPlayers() == 3) {
-                if (curState.getCurrentPlayer() == 1) {
-                    if (rand > .5) {
-                        int cardNum = (int) (rand * curState.humanPlayerNobles.size());
-                        Noble card = curState.humanPlayerNobles.get(cardNum);
-                        curState.addToMessage("You lost " + card.getNobleName() + ". ");
-                        curState.humanPlayerNobles.remove(cardNum);
-                    } else {
-                        int cardNum = (int) (rand * curState.computerPlayer2Nobles.size());
-                        Noble card = curState.computerPlayer2Nobles.get(cardNum);
-                        curState.addToMessage("Player 3 lost " + card.getNobleName() + ". ");
-                        curState.computerPlayer2Nobles.remove(cardNum);
-                    }
-                } else if (curState.getCurrentPlayer() == 2) {
-
-                    if (rand > .5) {
-                        int cardNum = (int) (rand * curState.humanPlayerNobles.size());
-                        if (cardNum > 0) {
-                            Noble card = curState.humanPlayerNobles.get(cardNum);
-                            curState.addToMessage("You lost " + card.getNobleName() + ". ");
-                            curState.humanPlayerNobles.remove(cardNum);
-                        }
-                    } else {
-                        int cardNum = (int) (rand * curState.computerPlayer1Nobles.size());
-                        if (cardNum > 0) {
-                            Noble card = curState.computerPlayer1Nobles.get(cardNum);
-                            curState.addToMessage("Player 2 lost " + card.getNobleName() + ". ");
-                            curState.computerPlayer1Nobles.remove(cardNum);
-                        }
-                    }
-
-                }
-            }
-            if (curState.getNumPlayers() == 4) {
-                if (curState.getCurrentPlayer() == 1) {
-                    if (rand < .33) {
-                        int cardNum = (int) (rand * curState.humanPlayerNobles.size());
-                        Noble card = curState.humanPlayerNobles.get(cardNum);
-                        curState.addToMessage("You lost " + card.getNobleName() + ". ");
-                        curState.humanPlayerNobles.remove(cardNum);
-
-                    } else if (rand > .33 && rand < .66) {
-                        int cardNum = (int) (rand * curState.computerPlayer2Nobles.size());
-                        Noble card = curState.computerPlayer2Nobles.get(cardNum);
-                        curState.addToMessage("Player 3 lost " + card.getNobleName() + ". ");
-                        curState.computerPlayer2Nobles.remove(cardNum);
-                    } else {
-                        int cardNum = (int) (rand * curState.computerPlayer3Nobles.size());
-                        Noble card = curState.computerPlayer3Nobles.get(cardNum);
-                        curState.addToMessage("Player 4 lost " + card.getNobleName() + ". ");
-                        curState.computerPlayer3Nobles.remove(cardNum);
-                    }
-                } else if (curState.getCurrentPlayer() == 2) {
-                    if (rand < .33) {
-                        int cardNum = (int) (rand * curState.humanPlayerNobles.size());
-                        Noble card = curState.humanPlayerNobles.get(cardNum);
-                        curState.addToMessage("You lost " + card.getNobleName() + ". ");
-                        curState.humanPlayerNobles.remove(cardNum);
-
-                    } else if (rand > .33 && rand < .66) {
-                        int cardNum = (int) (rand * curState.computerPlayer1Nobles.size());
-                        Noble card = curState.computerPlayer1Nobles.get(cardNum);
-                        curState.addToMessage("Player 2 lost " + card.getNobleName() + ". ");
-                        curState.computerPlayer1Nobles.remove(cardNum);
-                    } else {
-                        int cardNum = (int) (rand * curState.computerPlayer3Nobles.size());
-                        Noble card = curState.computerPlayer3Nobles.get(cardNum);
-                        curState.addToMessage("Player 4 lost " + card.getNobleName() + ". ");
-                        curState.computerPlayer3Nobles.remove(cardNum);
-                    }
-
-                } else if (curState.getCurrentPlayer() == 3) {
-                    if (rand < .33) {
-                        int cardNum = (int) (rand * curState.humanPlayerNobles.size());
-                        Noble card = curState.humanPlayerNobles.get(cardNum);
-                        curState.addToMessage("You lost " + card.getNobleName() + ". ");
-                        curState.humanPlayerNobles.remove(cardNum);
-                    } else if (rand > .33 && rand < .66) {
-                        int cardNum = (int) (rand * curState.computerPlayer1Nobles.size());
-                        Noble card = curState.computerPlayer1Nobles.get(cardNum);
-                        curState.addToMessage("Player 2 lost " + card.getNobleName() + ". ");
-                        curState.computerPlayer1Nobles.remove(cardNum);
-                    } else {
-                        int cardNum = (int) (rand * curState.computerPlayer2Nobles.size());
-                        Noble card = curState.computerPlayer2Nobles.get(cardNum);
-                        curState.addToMessage("Player 3 lost " + card.getNobleName() + ". ");
-                        curState.computerPlayer2Nobles.remove(cardNum);
-                    }
-
-                }
+            else
+            {
+                curState.setCompleted(false);
             }
         } else if (name.equals("Opinionated Guards")) {
             ArrayList<Noble> deathRow = curState.getDeathRow();
@@ -2913,23 +2678,52 @@ public class ActionCard implements Serializable {
             curState.setNobleCollectOk(false);
             curState.addToMessage("Player " + (curState.getCurrentPlayer() + 1) + " collected three action cards and no noble. ");
         } else if (name.equals("Public Demand")) {
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            int randIndex = (int) (Math.random() * (deathRow.size()));
-            Noble card = deathRow.get(randIndex);
-            deathRow.remove(randIndex);
-            deathRow.add(0, card);
-            curState.addToMessage(card.getNobleName() + " was moved to the front of the line. ");
-            curState.setDeathRow(deathRow);
-        } else if (name.equals("Pushed")) {
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            if (deathRow.size() > 2) {
-                int randIndex = 2 + ((int) (Math.random() * (deathRow.size() - 2)));
-                Noble card = deathRow.get(randIndex);
-                deathRow.remove(randIndex);
-                deathRow.add((randIndex - 2), card);
-                curState.addToMessage(card.getNobleName() + " was moved forward two spaces. ");
+            {
+                Integer currentI = null;
+                boolean done = false;
+                Integer currentN = 10;
+                ArrayList<Noble> deathRow = curState.getDeathRow();
+                Noble currentNoble = null;
+                loop:
+                {
+                    for (int i = 1; i < curState.getDeathRow().size(); i++) {
+                        if (i == 1) {
+                            currentN = curState.getDeathRow().get(i).getNoblePoints();
+                            currentNoble = curState.getDeathRow().get(i);
+                        } else if (curState.getDeathRow().get(i).getNobleName().equals("Palace Guard")) {
+                            currentNoble = curState.getDeathRow().get(i);
+                            deathRow.remove(i);
+                            deathRow.add(0, currentNoble);
+                            curState.addToMessage(currentNoble.getNobleName() + " was moved to the front of the line. ");
+                            curState.setDeathRow(deathRow);
+                            done = true;
+                            break loop;
+                        } else if (curState.getDeathRow().get(i).getNobleName().equals("Count") || curState.getDeathRow().get(i).getNobleName().equals("Countess") && hasCountOrCountess(curState) == true) {
+                            currentNoble = curState.getDeathRow().get(i);
+                            deathRow.remove(i);
+                            deathRow.add(0, currentNoble);
+                            curState.addToMessage(currentNoble.getNobleName() + " was moved to the front of the line. ");
+                            curState.setDeathRow(deathRow);
+                            done = true;
+                            break loop;
+                        } else if (currentN < curState.getDeathRow().get(i).getNoblePoints()) {
+                            currentN = curState.getDeathRow().get(i).getNoblePoints();
+                            currentNoble = curState.getDeathRow().get(i);
+                            currentI = i;
+                        }
+                    }
+                    if (done == false && currentI != null && currentNoble != null) {
+                        deathRow.remove(currentI);
+                        deathRow.add(0, currentNoble);
+                        curState.addToMessage(currentNoble.getNobleName() + " was moved to the front of the line. ");
+                        curState.setDeathRow(deathRow);
+                    } else {
+                        curState.setCompleted(false);
+                    }
+                }
             }
-            curState.setDeathRow(deathRow);
+        } else if (name.equals("Pushed")) {
+                hardExactMove(curState, 2);
         } else if (name.equals("Rain Delay")) {
             if (curState.getNumPlayers() == 2) {
                 curState.getHumanPlayerHand().clear();
@@ -2953,14 +2747,7 @@ public class ActionCard implements Serializable {
             curState.deathRow.clear();
             curState.deathRow.add(card);
         } else if (name.equals("Stumble")) {
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            if (deathRow.size() > 1) {
-                int randIndex = 1 + ((int) (Math.random() * (deathRow.size() - 1)));
-                Noble card = deathRow.get(randIndex);
-                deathRow.remove(randIndex);
-                deathRow.add((randIndex - 1), card);
-                curState.addToMessage(card.getNobleName() + " moved forward one spaces. ");
-            }
+                hardExactMove(curState, 1);
         } else if (name.equals("The Long Walk")) {
             ArrayList<Noble> curDeathRow = curState.getDeathRow();
             ArrayList<Noble> newDeathRow = new ArrayList<Noble>();
@@ -2971,114 +2758,216 @@ public class ActionCard implements Serializable {
             curState.setDeathRow(newDeathRow);
             curState.addToMessage("The order of the line was reversed. ");
         } else if (name.equals("'Tis a Far Better Thing")) {
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            if (deathRow.size() > 3) {
-                int randIndex = 3 + ((int) (Math.random() * (deathRow.size() - 3)));
-                Noble card = deathRow.get(randIndex);
-                deathRow.remove(randIndex);
-                deathRow.add((randIndex - 3), card);
-                curState.addToMessage(card.getNobleName() + " was moved forward three spaces. ");
-            }
-            curState.setDeathRow(deathRow);
+                hardExactMove(curState, 3);
         } else if (name.equals("Tough Crowd")) {
-            if (curState.getNumPlayers() == 2) {
                 curState.setHasToughCrowd(0);
-                curState.addToMessage("You received -2 points. ");
-            }
-            if (curState.getNumPlayers() == 3) {
-                if (curState.getCurrentPlayer() == 1) {
-                    if (rand > .5) {
-                        curState.setHasToughCrowd(0);
-                        curState.addToMessage("You received -2 points. ");
-                    } else {
-                        curState.setHasToughCrowd(2);
-                        curState.addToMessage("Player 3 received -2 points. ");
-                    }
-                } else if (curState.getCurrentPlayer() == 2) {
 
-                    if (rand > .5) {
-                        curState.setHasToughCrowd(0);
-                        curState.addToMessage("You received -2 points. ");
-                    } else {
-                        curState.setHasToughCrowd(1);
-                        curState.addToMessage("Player 2 received -2 points. ");
-                    }
-
-                }
-            }
-            if (curState.getNumPlayers() == 4) {
-                if (curState.getCurrentPlayer() == 1) {
-                    if (rand < .33) {
-                        curState.setHasToughCrowd(0);
-                        curState.addToMessage("You received -2 points. ");
-                    } else if (rand > .33 && rand < .66) {
-                        curState.setHasToughCrowd(2);
-                        curState.addToMessage("Player 3 received -2 points. ");
-                    } else {
-                        curState.setHasToughCrowd(3);
-                        curState.addToMessage("Player 4 received -2 points. ");
-                    }
-                } else if (curState.getCurrentPlayer() == 2) {
-                    if (rand < .33) {
-                        curState.setHasToughCrowd(0);
-                        curState.addToMessage("You received -2 points. ");
-                    } else if (rand > .33 && rand < .66) {
-                        curState.setHasToughCrowd(1);
-                        curState.addToMessage("Player 2 received -2 points. ");
-                    } else {
-                        curState.setHasToughCrowd(3);
-                        curState.addToMessage("Player 4 received -2 points. ");
-                    }
-
-                } else if (curState.getCurrentPlayer() == 3) {
-                    if (rand < .33) {
-                        curState.setHasToughCrowd(0);
-                        curState.addToMessage("You received -2 points. ");
-                    } else if (rand > .33 && rand < .66) {
-                        curState.setHasToughCrowd(1);
-                        curState.addToMessage("Player 2 received -2 points. ");
-                    } else {
-                        curState.setHasToughCrowd(2);
-                        curState.addToMessage("Player 3 received -2 points. ");
-                    }
-
-                }
-            }
         } else if (name.equals("Trip")) {
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            int randIndex = (int) (Math.random() * (deathRow.size() - 1));
-            Noble card = deathRow.get(randIndex);
-            deathRow.remove(randIndex);
-            deathRow.add((randIndex + 1), card);
-            curState.setPlaySecondAction(true);
-            curState.addToMessage(card.getNobleName() + " was moved backward one space. ");
-            curState.setDeathRow(deathRow);
+                hardUpToMove(curState, -1);
+                curState.setPlaySecondAction(true);
         } else if (name.equals("Was That My Name?")) {
-            ArrayList<Noble> deathRow = curState.getDeathRow();
-            if (deathRow.size() > 3) {
-                int randIndex = 3 + (int) (Math.random() * (deathRow.size() - 3));
-                double randSpaces = Math.random();
-                Noble card;
-                if (randSpaces >= .33) {
-                    card = deathRow.get(randIndex);
-                    deathRow.remove(randIndex);
-                    deathRow.add((randIndex - 1), card);
-                    curState.addToMessage(deathRow.get(randIndex).getNobleName() + " was moved forward one space. ");
-                } else if (randSpaces > .33 && randSpaces < .67) {
-                    card = deathRow.get(randIndex);
-                    deathRow.remove(randIndex);
-                    deathRow.add((randIndex - 2), card);
-                    curState.addToMessage(deathRow.get(randIndex).getNobleName() + " was moved forward two spaces. ");
-                } else if (randSpaces >= .67) {
-                    card = deathRow.get(randIndex);
-                    deathRow.remove(randIndex);
-                    deathRow.add((randIndex - 3), card);
-                    curState.addToMessage(deathRow.get(randIndex).getNobleName() + " was moved forward three spaces. ");
-                }
-            }
-            curState.setDeathRow(deathRow);
+                hardUpToMove(curState, 3);
         }
 
         return curState;
     }
-}
+            public void hardExactMove(GuillotineState state, int i) {
+                ArrayList<Noble> deathRow = state.getDeathRow();
+                if (state.getDeathRow().size() >= i + 1) {
+                    Noble card;
+                    if (deathRow.get(i).getNoblePoints() > deathRow.get(0).getNoblePoints()) {
+                        card = deathRow.get(i);
+                        deathRow.remove(i);
+                        deathRow.add(0, card);
+                        //state.addToMessage(card.getNobleName() + "was moved forward " + i + " space/s. ");
+                        state.setDeathRow(deathRow);
+                    }
+
+                }
+            }
+
+            public void hardUpToMove(GuillotineState state, int i) {
+                ArrayList<Noble> deathRow = state.getDeathRow();
+                int noble0Points = state.getDeathRow().get(0).getNoblePoints();
+                int noble1Points = state.getDeathRow().get(1).getNoblePoints();
+                int noble2Points = state.getDeathRow().get(2).getNoblePoints();
+                int noble3Points = state.getDeathRow().get(3).getNoblePoints();
+                Noble card;
+                if (i > 0) {
+                    if (noble3Points > noble0Points && noble3Points > noble2Points && noble3Points > noble1Points && i == 3 && state.getDeathRow().size() >= 4) {
+                        card = state.getDeathRow().get(3);
+                        deathRow.remove(3);
+                        deathRow.add(0, card);
+                        state.addToMessage(card.getNobleName() + "was moved forward three spaces");
+                        state.setDeathRow(deathRow);
+                    } else if (noble2Points > noble0Points && noble2Points > noble3Points && noble2Points > noble1Points && state.getDeathRow().size() >= 3) {
+                        card = state.getDeathRow().get(2);
+                        deathRow.remove(2);
+                        deathRow.add(0, card);
+                        state.addToMessage(card.getNobleName() + "was moved forward two spaces");
+                        state.setDeathRow(deathRow);
+                    } else if (noble1Points > noble0Points && noble1Points > noble2Points && noble1Points > noble3Points && state.getDeathRow().size() >= 2) {
+                        card = state.getDeathRow().get(1);
+                        deathRow.remove(1);
+                        deathRow.add(0, card);
+                        state.addToMessage(card.getNobleName() + "was moved forward one space");
+                        state.setDeathRow(deathRow);
+                    } else {
+                        if (deathRow.size() > 3) {
+                            int randIndex = 3 + (int) (Math.random() * (deathRow.size() - 3));
+                            double randSpaces = Math.random();
+                            if (randSpaces >= .33) {
+                                card = deathRow.get(randIndex);
+                                deathRow.remove(randIndex);
+                                deathRow.add((randIndex - 1), card);
+                                state.addToMessage(deathRow.get(randIndex).getNobleName() + " was moved forward one space. ");
+                                state.setDeathRow(deathRow);
+                            } else if (randSpaces > .33 && randSpaces < .67) {
+                                card = deathRow.get(randIndex);
+                                deathRow.remove(randIndex);
+                                deathRow.add((randIndex - 2), card);
+                                state.addToMessage(deathRow.get(randIndex).getNobleName() + " was moved forward two spaces. ");
+                                state.setDeathRow(deathRow);
+                            } else if (randSpaces >= .67) {
+                                card = deathRow.get(randIndex);
+                                deathRow.remove(randIndex);
+                                deathRow.add((randIndex - 3), card);
+                                state.addToMessage(deathRow.get(randIndex).getNobleName() + " was moved forward three spaces. ");
+                                state.setDeathRow(deathRow);
+                            }
+                        }
+                        state.setDeathRow(deathRow);
+                    }
+                } else if (i < 0) {
+                    if (i == -1) {
+                        if (noble0Points < noble1Points) {
+                            card = deathRow.get(1);
+                            deathRow.remove(1);
+                            deathRow.add(0, card);
+                            state.addToMessage(card.getNobleName() + "was moved backward one space");
+                            state.setDeathRow(deathRow);
+                        } else if (state.getCurrentPlayer() == 2 && (noble3Points > state.getDeathRow().get(4).getNoblePoints() || state.getDeathRow().get(3).getNobleName().equals("Palace Guard") || state.getDeathRow().get(3).getNobleName().equals("Count") || state.getDeathRow().get(3).getNobleName().equals("Countess"))) {
+                            card = deathRow.get(3);
+                            deathRow.remove(3);
+                            deathRow.trimToSize();
+                            deathRow.add(4, card);
+                            state.addToMessage(card.getNobleName() + "was moved backward one space");
+                            state.setDeathRow(deathRow);
+                        } else if (state.getCurrentPlayer() == 2 && (noble2Points < noble3Points || state.getDeathRow().get(3).getNobleName().equals("Palace Guard") || state.getDeathRow().get(3).getNobleName().equals("Count") || state.getDeathRow().get(3).getNobleName().equals("Countess"))) {
+                            card = deathRow.get(2);
+                            deathRow.remove(2);
+                            deathRow.trimToSize();
+                            deathRow.add(3, card);
+                            state.addToMessage(card.getNobleName() + "was moved backward one space");
+                            state.setDeathRow(deathRow);
+                        } else if (state.getCurrentPlayer() == 3 && (noble2Points > noble3Points || state.getDeathRow().get(2).getNobleName().equals("Palace Guard") || state.getDeathRow().get(2).getNobleName().equals("Count") || state.getDeathRow().get(2).getNobleName().equals("Countess"))) {
+                            card = deathRow.get(2);
+                            deathRow.remove(2);
+                            deathRow.trimToSize();
+                            deathRow.add(3, card);
+                            state.addToMessage(card.getNobleName() + "was moved backward one space");
+                            state.setDeathRow(deathRow);
+                        } else if (state.getCurrentPlayer() == 3 && (noble1Points < noble2Points || state.getDeathRow().get(2).getNobleName().equals("Palace Guard") || state.getDeathRow().get(2).getNobleName().equals("Count") || state.getDeathRow().get(2).getNobleName().equals("Countess"))) {
+                            card = deathRow.get(1);
+                            deathRow.remove(1);
+                            deathRow.trimToSize();
+                            deathRow.add(2, card);
+                            state.addToMessage(card.getNobleName() + "was moved backward one space");
+                            state.setDeathRow(deathRow);
+                        } else if (state.getCurrentPlayer() == 4 && (noble1Points > noble2Points || state.getDeathRow().get(1).getNobleName().equals("Palace Guard") || state.getDeathRow().get(1).getNobleName().equals("Count") || state.getDeathRow().get(1).getNobleName().equals("Countess"))) {
+                            card = deathRow.get(1);
+                            deathRow.remove(1);
+                            deathRow.trimToSize();
+                            deathRow.add(2, card);
+                            state.addToMessage(card.getNobleName() + "was moved backward one space");
+                            state.setDeathRow(deathRow);
+                        } else if (state.getCurrentPlayer() == 4 && (noble0Points < noble1Points || state.getDeathRow().get(1).getNobleName().equals("Palace Guard") || state.getDeathRow().get(1).getNobleName().equals("Count") || state.getDeathRow().get(1).getNobleName().equals("Countess"))) {
+                            card = deathRow.get(0);
+                            deathRow.remove(0);
+                            deathRow.trimToSize();
+                            deathRow.add(1, card);
+                            state.addToMessage(card.getNobleName() + "was moved backward one space");
+                            state.setDeathRow(deathRow);
+                        }
+                    } else if (i == -2) {
+                        if (noble0Points < noble1Points) {
+                            card = deathRow.get(1);
+                            deathRow.remove(1);
+                            deathRow.add(0, card);
+                            state.addToMessage(deathRow.get(0).getNobleName() + "was moved backwards one space");
+                            state.setDeathRow(deathRow);
+                        } else {
+                            int randIndex = (int) (Math.random() * (deathRow.size() - 2));
+                            card = deathRow.get(randIndex);
+                            double randSpaces = Math.random();
+                            deathRow.remove(randIndex);
+                            if (randSpaces >= .5) {
+                                deathRow.add((randIndex + 1), card);
+                                state.addToMessage(card.getNobleName() + "was moved backward one space. ");
+                            } else if (randSpaces < .5) {
+                                deathRow.add((randIndex + 2), card);
+                                state.addToMessage(card.getNobleName() + "was moved backward two spaces. ");
+                            }
+                            state.setDeathRow(deathRow);
+                        }
+                    } else if (i == -3) {
+                        if (noble0Points < noble1Points) {
+                            card = deathRow.get(1);
+                            deathRow.remove(1);
+                            deathRow.add(0, card);
+                            state.addToMessage(deathRow.get(0).getNobleName() + "was moved backwards one space");
+                            state.setDeathRow(deathRow);
+                        } else {
+                            if (deathRow.size() >= 4) {
+                                int randIndex = (int) (Math.random() * (deathRow.size() - 3));
+                                double randSpaces = Math.random();
+                                String nobleName;
+                                if (randSpaces >= .33) {
+                                    nobleName = deathRow.get(randIndex).getNobleName();
+                                    deathRow.add((randIndex + 1), deathRow.get(randIndex));
+                                    deathRow.remove(randIndex);
+                                    state.addToMessage(nobleName + " was moved backward one space. ");
+                                } else if (randSpaces > .33 && randSpaces < .67) {
+                                    nobleName = deathRow.get(randIndex).getNobleName();
+                                    deathRow.add((randIndex + 2), deathRow.get(randIndex));
+                                    deathRow.remove(randIndex);
+                                    state.addToMessage(nobleName + " was moved backward two spaces. ");
+                                } else if (randSpaces >= .67) {
+                                    nobleName = deathRow.get(randIndex).getNobleName();
+                                    deathRow.add((randIndex + 3), deathRow.get(randIndex));
+                                    deathRow.remove(randIndex);
+                                    state.addToMessage(nobleName + " was moved backward three spaces. ");
+                                }
+                            }
+                            state.setDeathRow(deathRow);
+                        }
+                    }
+                }
+            }
+
+            public boolean hasCountOrCountess(GuillotineState state) {
+                if (state.getCurrentPlayer() == 2) {
+                    for (int i = 0; i < state.computerPlayer1Hand.size(); i++) {
+                        if (state.getComputerPlayer1Hand().get(i).getName().equals("Count") || state.getComputerPlayer1Hand().get(i).getName().equals("Countess")) {
+                            return true;
+                        }
+                    }
+                    return false;
+                } else if (state.getCurrentPlayer() == 3) {
+                    for (int i = 0; i < state.computerPlayer2Hand.size(); i++) {
+                        if (state.getComputerPlayer2Hand().get(i).getName().equals("Count") || state.getComputerPlayer2Hand().get(i).getName().equals("Countess")) {
+                            return true;
+                        }
+                    }
+                    return false;
+                } else if (state.getCurrentPlayer() == 4) {
+                    for (int i = 0; i < state.computerPlayer3Hand.size(); i++) {
+                        if (state.getComputerPlayer3Hand().get(i).getName().equals("Count") || state.getComputerPlayer3Hand().get(i).getName().equals("Countess")) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+        }

@@ -47,38 +47,64 @@ public class GuillotineComputerPlayerHard extends GameComputerPlayer implements 
      *      This state shows whose turn it is and what all the variables are set to.
      */
 	public GuillotineState playCard(GuillotineState state) {
-		if (state.getCurrentPlayer() == 1){
-			ArrayList<ActionCard> hand = state.getComputerPlayer1Hand();
-			int handSize = hand.size();
-
-			int rand = (int)(Math.random()*handSize);
-			ActionCard playingCard = hand.get(rand);
-			state.addToMessage("\nPlayer 2 played " + playingCard.getName() + ".");
-			hand.remove(rand);
-			playingCard.hardAIAction(state);
-			state.setComputerPlayer1Hand(hand);
-		}
-		else if(state.getCurrentPlayer() == 2) {
-			ArrayList<ActionCard> hand = state.getComputerPlayer2Hand();
-			int handSize = hand.size();
-
-			int rand = (int)(Math.random()*handSize);
-			ActionCard playingCard = hand.get(rand);
-			state.addToMessage("\nPlayer 3 played " + playingCard.getName() + ".");
-			hand.remove(rand);
-			playingCard.hardAIAction(state);
-			state.setComputerPlayer2Hand(hand);
-		}
-		else if(state.getCurrentPlayer() == 3) {
-			ArrayList<ActionCard> hand = state.getComputerPlayer3Hand();
-			int handSize = hand.size();
-
-			int rand = (int)(Math.random()*handSize);
-			ActionCard playingCard = hand.get(rand);
-			state.addToMessage("\nPlayer 4 played " + playingCard.getName() + ".");
-			hand.remove(rand);
-			playingCard.hardAIAction(state);
-			state.setComputerPlayer3Hand(hand);
+		int i = 0;
+		if (state.getCurrentPlayer() == 1) {
+			state.setCompleted(false);
+			while (state.isCompleted() == false) {
+				state.setCompleted(true);
+				ArrayList<ActionCard> hand = state.getComputerPlayer1Hand();
+				int handSize = hand.size();
+				int rand = (int) (Math.random() * handSize);
+				ActionCard playingCard = hand.get(rand);
+				playingCard.hardAIAction(state);
+				i++;
+				if (state.isCompleted() == true) {
+					state.addToMessage("\nPlayer 2 played " + playingCard.getName() + ".");
+					hand.remove(rand);
+					state.setComputerPlayer1Hand(hand);
+					state.setCompleted(false);
+				}
+			}
+		} else if (state.getCurrentPlayer() == 2) {
+			i = 0;
+			if (state.getCurrentPlayer() == 1) {
+				state.setCompleted(false);
+				while (state.isCompleted() == false) {
+					state.setCompleted(true);
+					ArrayList<ActionCard> hand = state.getComputerPlayer1Hand();
+					int handSize = hand.size();
+					int rand = (int) (Math.random() * handSize);
+					ActionCard playingCard = hand.get(rand);
+					playingCard.hardAIAction(state);
+					i++;
+					if (state.isCompleted() == true) {
+						state.addToMessage("\nPlayer 3 played " + playingCard.getName() + ".");
+						hand.remove(rand);
+						state.setComputerPlayer1Hand(hand);
+						state.setCompleted(false);
+					}
+				}
+			}
+		} else if (state.getCurrentPlayer() == 3) {
+			i = 0;
+			if (state.getCurrentPlayer() == 1) {
+				state.setCompleted(false);
+				while (state.isCompleted() == false) {
+					state.setCompleted(true);
+					ArrayList<ActionCard> hand = state.getComputerPlayer1Hand();
+					int handSize = hand.size();
+					int rand = (int) (Math.random() * handSize);
+					ActionCard playingCard = hand.get(rand);
+					playingCard.hardAIAction(state);
+					i++;
+					if (state.isCompleted() == true) {
+						state.addToMessage("\nPlayer 3 played " + playingCard.getName() + ".");
+						hand.remove(rand);
+						state.setComputerPlayer1Hand(hand);
+						state.setCompleted(false);
+					}
+				}
+			}
 		}
 		return state;
 	}

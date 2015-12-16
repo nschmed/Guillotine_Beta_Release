@@ -67,6 +67,17 @@ public class GuillotineState implements Serializable {
 	ArrayList<Noble> computerPlayer2Nobles;
 	ArrayList<Noble> computerPlayer3Nobles;
 
+	// boolean with purpose of allowing the computer players to not throw away action cards
+	private boolean completed;
+
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
+	}
+
 
 	/**
 	 * constructor, initializing the counter value from the parameter
